@@ -30,6 +30,7 @@ class Claim(BaseModel):
     confidence: float = Field(ge=0, le=1)
     evidence_ids: list[str] = []
     counterevidence_ids: list[str] = []
+    details: dict[str, Any] = {}
 
 class ActionRecommendation(BaseModel):
     action_id: str
@@ -39,6 +40,9 @@ class ActionRecommendation(BaseModel):
     missing_evidence: list[str] = []
     requires_human_approval: bool = True
     consequence: Literal["informational", "preparatory", "external"] = "preparatory"
+    priority: int = Field(default=50, ge=0, le=100)
+    estimated_support: str | None = None
+    proof: list[str] = []
 
 class CaseResult(BaseModel):
     case_id: str
