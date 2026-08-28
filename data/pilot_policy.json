@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0-rc2",
+  "updated_at": "2026-08-28",
+  "mode": "invite_only_first_testers",
+  "audience": {
+    "adults_only": true,
+    "initial_cohort_target": "5-15 trusted testers",
+    "children_as_direct_users": false
+  },
+  "access": {
+    "shared_invite_secret": true,
+    "signed_http_only_session": true,
+    "session_max_hours": 8,
+    "secure_cookie_default": true,
+    "same_site": "strict",
+    "production_iam_claimed": false
+  },
+  "data": {
+    "personal_document_bytes_persisted": false,
+    "document_processing": "in_memory_only",
+    "personal_case_database": false,
+    "public_source_receipts_may_be_persisted": true,
+    "use_redacted_documents_where_possible": true,
+    "prohibited_pilot_inputs": [
+      "passwords or authentication secrets",
+      "bank credentials",
+      "identity-document scans",
+      "medical records",
+      "criminal-case material",
+      "intimate information"
+    ]
+  },
+  "limits": {
+    "max_upload_bytes": 5242880,
+    "allowed_uploads": ["pdf", "txt"],
+    "default_requests_per_minute": 30
+  },
+  "authority": {
+    "automatic_external_actions": false,
+    "human_approval_for_consequential_actions": true,
+    "legal_advice_claimed": false,
+    "entitlement_authority_claimed": false
+  },
+  "feedback": {
+    "channel": "github_issue_template",
+    "personal_data_requested": false,
+    "core_measures": [
+      "time_to_next_action",
+      "next_action_comprehension",
+      "evidence_comprehension",
+      "wrong_or_unsafe_signal"
+    ]
+  },
+  "release_boundary": "Pilot-ready means suitable for a small invited adult test cohort under these constraints. It does not mean public beta, GDPR certification, production IAM, legal validation, or authority-grade decisions."
+}
