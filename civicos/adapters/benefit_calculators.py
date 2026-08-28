@@ -29,6 +29,7 @@ def build_calculator_plans(household: dict[str, Any]) -> list[CalculatorPlan]:
         plans.append(CalculatorPlan(
             benefit="Wohngeld",
             tool_name="Berlin Wohngeldrechner / federal fallback",
+            source_id="berlin_wohngeldrechner",
             official_route=str(source_ref("berlin_wohngeldrechner").url),
             state="temporarily_unavailable" if not missing else "missing_inputs",
             supplied_inputs=supplied,
@@ -43,6 +44,7 @@ def build_calculator_plans(household: dict[str, Any]) -> list[CalculatorPlan]:
         plans.append(CalculatorPlan(
             benefit="Kinderzuschlag",
             tool_name="KiZ-Lotse",
+            source_id="arbeitsagentur_kiz_lotse",
             official_route=str(source_ref("arbeitsagentur_kiz_lotse").url),
             state="official_tool_only" if not missing else "missing_inputs",
             supplied_inputs=supplied,
@@ -56,6 +58,7 @@ def build_calculator_plans(household: dict[str, Any]) -> list[CalculatorPlan]:
         plans.append(CalculatorPlan(
             benefit="Elterngeld",
             tool_name="Elterngeldrechner",
+            source_id="familienportal_elterngeld_calculator",
             official_route=str(source_ref("familienportal_elterngeld_calculator").url),
             state="ready" if not missing else "missing_inputs",
             supplied_inputs=supplied,
@@ -70,6 +73,7 @@ def build_calculator_plans(household: dict[str, Any]) -> list[CalculatorPlan]:
         plans.append(CalculatorPlan(
             benefit="Unterhaltsvorschuss",
             tool_name="CivicOS bounded age-band preview + official application route",
+            source_id="familienportal_unterhaltsvorschuss",
             official_route=str(source_ref("familienportal_unterhaltsvorschuss").url),
             state="guidance_only" if not missing else "missing_inputs",
             supplied_inputs=supplied,
