@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "1.0.0-rc1",
   "verified_at": "2026-08-28",
   "contract": {
     "verified_route": "Authoritative route checked on verified_at; not evidence that a current run fetched the content.",
@@ -8,6 +8,13 @@
     "official_calculator": "An official calculator/pre-check route exists. CivicOS may prepare and validate inputs, but the external tool remains authoritative for its own output and may itself be non-binding."
   },
   "sources": {
+    "service_berlin": {"title":"ServicePortal Berlin","publisher":"Land Berlin","url":"https://service.berlin.de/","verified_at":"2026-08-28","supports":["service discovery","authority routing","official service descriptions"]},
+    "berlin_authorities": {"title":"Behörden und Stellen A-Z","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/behoerde/","verified_at":"2026-08-28","supports":["authority directory","responsibility discovery"]},
+    "berlin_mietpreis": {"title":"Mietpreisüberhöhung anzeigen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/355534/","verified_at":"2026-08-28","supports":["rent comparison check","Mietpreisprüfstelle route","responsible district authority"]},
+    "berlin_ifg": {"title":"Berliner Informationsfreiheitsgesetz","publisher":"Berliner Beauftragte für Datenschutz und Informationsfreiheit","url":"https://www.datenschutz-berlin.de/informationsfreiheit/rechtliche-grundlagen/berliner-informationsfreiheitsgesetz-ifg/","verified_at":"2026-08-28","supports":["Berlin information-access right","scope","official IFG guidance"]},
+    "berlin_ifg_guidance": {"title":"Informationsfreiheit","publisher":"Senatsverwaltung für Inneres und Sport","url":"https://www.berlin.de/sen/inneres/buerger-und-staat/datenschutz-und-informationsfreiheit/informationsfreiheit/artikel.23940.php","verified_at":"2026-08-28","supports":["where to request records","Berlin authority scope","fees and exclusions overview"]},
+    "police_digital_violence": {"title":"Digitale Gewalt","publisher":"Polizeiliche Kriminalprävention der Länder und des Bundes","url":"https://www.polizei-beratung.de/themen-und-tipps/gefahren-im-internet/digitale-gewalt/","verified_at":"2026-08-28","supports":["evidence preservation","platform report order","police reporting guidance"]},
+    "police_digital_evidence": {"title":"Digitale Beweise sichern","publisher":"Polizeiliche Kriminalprävention der Länder und des Bundes","url":"https://www.polizei-beratung.de/aktuelles/detailansicht/digitale-beweissicherung-rechtssichere-screenshots-erstellen/","verified_at":"2026-08-28","supports":["screenshot evidence guidance","context and URL preservation"]},
     "berlin_wohngeld": {"title":"Wohngeld - Mietzuschuss beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/120656/","verified_at":"2026-08-28","supports":["application route","eligibility factors","documents","responsibility","official calculator route"]},
     "berlin_wohngeldrechner": {"title":"Wohngeldrechner","publisher":"Land Berlin","url":"https://www.berlin.de/sen/wohnen/service/wohngeldrechner/","verified_at":"2026-08-28","supports":["official calculator status","federal fallback route"],"note":"Berlin states its own calculator is currently under technical revision and points users to the federal Wohngeld calculator."},
     "familienportal_kiz": {"title":"Kinderzuschlag","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/kinderzuschlag","verified_at":"2026-08-28","supports":["eligibility pre-check","documents","application route"]},
