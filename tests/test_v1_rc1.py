@@ -26,6 +26,8 @@ def test_release_gate_can_be_master_proof_ready_without_claiming_public_beta():
     assert readiness["master_proof_ready"] is True
     assert readiness["public_beta_ready"] is False
     assert readiness["golden_cases"]["passed"] == 12
+    assert readiness["golden_cases"]["source_impact_covered"] == 12
+    assert readiness["master_proof_gates"]["all_golden_cases_have_source_impact_edges"] is True
     assert readiness["golden_cases"]["flagship_verticals"] == ["benefits", "decision-review", "public-money"]
 
 
