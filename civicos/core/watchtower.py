@@ -3,12 +3,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from civicos.core.golden_scenarios import run_golden_scenario
 from civicos.core.models import GoldenCaseReplay, SourceChangeImpact, WatchtowerReport
 from civicos.engine import run
 from civicos.providers.judge_mcp import build_judge_request, provider_status as judge_status
 
 ROOT = Path(__file__).resolve().parents[2]
-REPLAY_FIXTURES = json.loads((ROOT / "data" / "golden_replay_fixtures.json").read_text(encoding="utf-8"))["fixtures"]
+REPLAY_DATA = json.loads((ROOT / "data" / "golden_replay_fixtures.json").read_text(encoding="utf-8"))
+REPLAY_FIXTURES = REPLAY_DATA["fixtures"]
 
 
 def _deterministic_checks(result) -> dict[str, bool]:
@@ -32,22 +34,29 @@ def replay_golden_case(case_id: str) -> GoldenCaseReplay:
         return GoldenCaseReplay(
             case_id=case_id,
             status="blocked",
-            note="No executable golden-case fixture exists yet. Watchtower refuses to fake a replay result.",
+            note="No executable golden-case fixture exists. Watchtower refuses to fake a replay result.",
             judge_request={},
         )
 
-    vertical = fixture["vertical"]
+    runner = fixture.get("runner", "engine")
+    maturity = fixture.get("maturity", "unknown")
     try:
-        result = run(vertical, fixture["payload"])
-    except Exception as exc:  # deterministic replay boundary
+        if runner == "scenario":
+            result = run_golden_scenario(case_id, fixture["payload"])
+            vertical = result.vertical
+        else:
+            vertical = fixture["vertical"]
+            result = run(vertical, fixture["payload"])
+    except Exception as exc:
         return GoldenCaseReplay(
             case_id=case_id,
-            vertical=vertical,
+            vertical=fixture.get("vertical") or fixture.get("domain"),
             status="failed",
             result_summary=f"Replay raised {type(exc).__name__}: {exc}",
             deterministic_checks={},
             failed_checks=["execution"],
             judge_request={},
+            note=f"maturity={maturity}; execution failed; do not publish an update.",
         )
 
     checks = _deterministic_checks(result)
@@ -62,21 +71,19 @@ def replay_golden_case(case_id: str) -> GoldenCaseReplay:
         failed_checks=failed,
         judge_request=build_judge_request(result),
         note=(
-            "Deterministic CivicOS contract passed; Judge MCP request is prepared as an optional second quality gate."
+            f"maturity={maturity}; deterministic CivicOS contract passed; Judge MCP request is prepared as an optional second quality gate."
             if status == "passed"
-            else "Deterministic contract failed; do not publish an update."
+            else f"maturity={maturity}; deterministic contract failed; do not publish an update."
         ),
     )
 
 
-def evaluate_watchtower(impact: SourceChangeImpact, *, monitor_metadata: dict[str, Any] | None = None) -> WatchtowerReport:
-    """Turn source change impact into a noise-suppressed replay/alert decision.
+def replay_all_golden_cases() -> list[GoldenCaseReplay]:
+    return [replay_golden_case(case_id) for case_id in sorted(REPLAY_FIXTURES)]
 
-    HTML/layout churn with no declared fact delta is suppressed. Semantic fact changes
-    trigger replays of affected golden cases. Missing fixtures are visible as blocked,
-    never counted as a pass. Judge MCP is an optional calibrated quality gate after the
-    deterministic checks, never publishing authority.
-    """
+
+def evaluate_watchtower(impact: SourceChangeImpact, *, monitor_metadata: dict[str, Any] | None = None) -> WatchtowerReport:
+    """Turn source change impact into a noise-suppressed replay/alert decision."""
     semantic = bool(impact.added_fact_ids or impact.removed_fact_ids or impact.changed_fact_ids)
     provider_chain = [
         "mikelninh/citizen-agents (monitor/event provider)",
@@ -137,14 +144,20 @@ def evaluate_watchtower(impact: SourceChangeImpact, *, monitor_metadata: dict[st
 
 
 def watchtower_status() -> dict[str, Any]:
+    maturity = {"flagship": 0, "bounded-golden": 0, "other": 0}
+    for fixture in REPLAY_FIXTURES.values():
+        label = fixture.get("maturity", "other")
+        maturity[label if label in maturity else "other"] += 1
     return {
-        "version": "0.6.0",
-        "mode": "event-driven/manual-cycle proof; persistent scheduler/store not yet connected",
+        "version": "1.0.0-rc1",
+        "mode": "scheduled-capable Watchtower; repo baselines + optional durable runtime snapshot store",
         "citizen_agents": {
             "provider": "mikelninh/citizen-agents",
             "contract": "cited/logged public-source monitoring event -> explicit previous snapshot -> CivicOS compare"
         },
         "judge_mcp": judge_status(),
         "executable_golden_cases": sorted(REPLAY_FIXTURES),
+        "executable_count": len(REPLAY_FIXTURES),
+        "maturity": maturity,
         "alert_policy": "suppress content-only noise; notify only on declared fact deltas; review if replay fails or coverage is blocked",
     }
