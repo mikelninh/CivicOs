@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, HttpUrl
 
 ClaimStatus = Literal["supported", "disputed", "unresolved"]
 SourceState = Literal["verified_route", "verified_snapshot", "live_fetch"]
+FactStatus = Literal["verified", "not_found"]
 
 
 class SourceRef(BaseModel):
@@ -27,6 +28,28 @@ class EvidenceReceipt(BaseModel):
     storage_state: Literal["receipt_only", "stored"] = "receipt_only"
     storage_path: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class EvidenceExcerpt(BaseModel):
+    excerpt_id: str
+    receipt_id: str
+    source_id: str
+    text: str
+    locator: str = "normalized_text_window"
+    extraction_method: str = "deterministic_pattern"
+
+
+class EvidenceFact(BaseModel):
+    fact_id: str
+    claim_id: str | None = None
+    source_id: str
+    receipt_id: str
+    label: str
+    value: Any = None
+    status: FactStatus = "verified"
+    excerpt_id: str | None = None
+    extraction_method: str = "deterministic_pattern"
+    details: dict[str, Any] = Field(default_factory=dict)
 
 
 class Claim(BaseModel):
@@ -59,10 +82,13 @@ class CaseResult(BaseModel):
     claims: list[Claim] = Field(default_factory=list)
     sources: list[SourceRef] = Field(default_factory=list)
     evidence_receipts: list[EvidenceReceipt] = Field(default_factory=list)
+    evidence_excerpts: list[EvidenceExcerpt] = Field(default_factory=list)
+    evidence_facts: list[EvidenceFact] = Field(default_factory=list)
     actions: list[ActionRecommendation] = Field(default_factory=list)
     uncertainties: list[str] = Field(default_factory=list)
     contradictions: list[str] = Field(default_factory=list)
     freshness: dict[str, Any] = Field(default_factory=dict)
+    graph: dict[str, Any] = Field(default_factory=dict)
     audit: list[dict[str, Any]] = Field(default_factory=list)
 
     @property
