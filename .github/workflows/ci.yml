@@ -14,3 +14,5 @@ jobs:
       - run: pytest -q
       - name: Enforce v1 master-proof release gate
         run: python scripts/check_release_gate.py
+      - name: Enforce first-tester pilot release gate
+        run: python scripts/check_pilot_gate.py
