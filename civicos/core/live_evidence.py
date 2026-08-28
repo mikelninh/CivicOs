@@ -11,16 +11,22 @@ def refresh_case_sources(result: CaseResult, *, persist_public_evidence: bool = 
     Failures are explicit and non-fatal: the original verified-route source remains,
     and the case records that freshness could not be established for that source.
     """
-    vault = EvidenceVault() if persist_public_evidence else EvidenceVault(None)
+    vault = EvidenceVault.from_env() if persist_public_evidence else EvidenceVault()
     receipts = list(result.evidence_receipts)
     refreshed = []
     failures = []
     updated_sources = []
 
+    if persist_public_evidence and not vault.enabled:
+        failures.append({
+            "source_id": "evidence-vault",
+            "error": "persist_public_evidence=true but CIVICOS_EVIDENCE_DIR is not configured; receipts remain receipt-only",
+        })
+
     for source in result.sources:
         try:
             receipt, body = fetch_official(source.source_id)
-            if persist_public_evidence:
+            if persist_public_evidence and vault.enabled:
                 receipt = vault.store_public_source(receipt, body)
             receipts.append(receipt)
             refreshed.append(source.source_id)
@@ -33,10 +39,13 @@ def refresh_case_sources(result: CaseResult, *, persist_public_evidence: bool = 
             updated_sources.append(source)
 
     uncertainties = list(result.uncertainties)
-    if failures:
+    source_failures = [f for f in failures if f["source_id"] != "evidence-vault"]
+    if source_failures:
         uncertainties.append(
             "One or more official sources could not be live-fetched for this run; those sources remain verified routes rather than current evidence."
         )
+    if any(f["source_id"] == "evidence-vault" for f in failures):
+        uncertainties.append("Public-source persistence was requested but no evidence-vault directory is configured; live receipts were still created in memory.")
 
     return result.model_copy(update={
         "sources": updated_sources,
@@ -47,7 +56,7 @@ def refresh_case_sources(result: CaseResult, *, persist_public_evidence: bool = 
             "live_fetch_count": len(refreshed),
             "source_count": len(result.sources),
             "failures": failures,
-            "all_sources_live": bool(result.sources) and not failures and len(refreshed) == len(result.sources),
+            "all_sources_live": bool(result.sources) and not source_failures and len(refreshed) == len(result.sources),
         },
         "audit": list(result.audit) + [{
             "step": "live_source_refresh_v3",
