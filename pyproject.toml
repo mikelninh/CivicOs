@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civicos"
-version = "0.6.0"
+version = "1.0.0rc1"
 description = "Evidence-to-action infrastructure for civic questions"
 requires-python = ">=3.11"
 dependencies = [
