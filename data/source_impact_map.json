@@ -1,0 +1,65 @@
+{
+  "version": "0.5.0",
+  "sources": {
+    "berlin_wohngeld": {
+      "claim_ids": ["benefit:wohngeld"],
+      "golden_case_ids": ["citizen-benefits-gap", "citizen-wohngeld-rejection"]
+    },
+    "berlin_wohngeldrechner": {
+      "claim_ids": ["benefit:wohngeld"],
+      "golden_case_ids": ["citizen-benefits-gap", "citizen-wohngeld-rejection"]
+    },
+    "arbeitsagentur_kiz": {
+      "claim_ids": ["benefit:kinderzuschlag"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "arbeitsagentur_kiz_lotse": {
+      "claim_ids": ["benefit:kinderzuschlag"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "familienportal_elterngeld_amount": {
+      "claim_ids": ["benefit:elterngeld"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "familienportal_elterngeld_eligibility": {
+      "claim_ids": ["benefit:elterngeld"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "familienportal_elterngeld_calculator": {
+      "claim_ids": ["benefit:elterngeld"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "familienportal_unterhaltsvorschuss": {
+      "claim_ids": ["benefit:unterhaltsvorschuss"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "berlin_but_service": {
+      "claim_ids": ["benefit:bildung-teilhabe"],
+      "golden_case_ids": ["citizen-benefits-gap"]
+    },
+    "berlin_procurement_awards": {
+      "claim_ids": ["public-money:award", "public-money:vendor"],
+      "golden_case_ids": ["investigator-public-money", "investigator-procurement-pattern", "investigator-supplier-links"]
+    },
+    "bundeshaushalt": {
+      "claim_ids": ["public-money:budget"],
+      "golden_case_ids": ["investigator-public-money"]
+    },
+    "bundesrechnungshof": {
+      "claim_ids": ["public-money:audit"],
+      "golden_case_ids": ["investigator-public-money", "investigator-procurement-pattern"]
+    },
+    "unternehmensregister": {
+      "claim_ids": ["public-money:legal-entity"],
+      "golden_case_ids": ["investigator-public-money", "investigator-supplier-links", "investigator-contradictory-records"]
+    },
+    "vwvfg": {
+      "claim_ids": ["decision:cited-provisions", "decision:reasoning-present", "decision:remedy-language-present"],
+      "golden_case_ids": ["citizen-wohngeld-rejection", "operator-policy-change-impact"]
+    },
+    "gesetze_im_internet": {
+      "claim_ids": ["decision:cited-provisions"],
+      "golden_case_ids": ["citizen-wohngeld-rejection", "operator-policy-change-impact"]
+    }
+  }
+}
