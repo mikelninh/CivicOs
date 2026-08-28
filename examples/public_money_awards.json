@@ -1,0 +1,23 @@
+[
+  {
+    "authority":"Land Berlin",
+    "title":"Example IT service A",
+    "vendor":"Nordlicht Daten GmbH",
+    "value_eur":120000,
+    "vendor_record":{"record_id":"vendor-a1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"],"source":"award_notice_a"}
+  },
+  {
+    "authority":"Land Berlin",
+    "title":"Example IT service B",
+    "vendor":"Nordlicht Daten",
+    "value_eur":85000,
+    "vendor_record":{"record_id":"vendor-a2","name":"NORDLICHT DATEN","address":"Karl Marx Allee 88 10243 Berlin","domain":"www.nordlicht-daten.de","directors":["L. Winter"],"source":"award_notice_b"}
+  },
+  {
+    "authority":"Land Berlin",
+    "title":"Example research service",
+    "vendor":"Civic Labs UG",
+    "value_eur":65000,
+    "vendor_record":{"record_id":"vendor-c1","name":"Civic Labs UG","address":"Oranienstrasse 12, 10999 Berlin","domain":"civiclabs.example","directors":["Mara Koenig"],"source":"award_notice_c"}
+  }
+]

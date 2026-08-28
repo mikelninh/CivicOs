@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CivicOS — First Tester Pilot</title>
+<style>
+:root{--bg:#07110f;--panel:#0d1b18;--ink:#effaf5;--muted:#9ab6aa;--line:#1e3d34;--accent:#8cf0bf;--warn:#ffd38a}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#12352b 0,transparent 32%),var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}main{max-width:820px;margin:auto;padding:64px 22px 90px}.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.14em;font-size:12px}h1{font-size:clamp(42px,7vw,68px);line-height:1;margin:12px 0 18px}.lead{font-size:20px;color:var(--muted)}.panel{border:1px solid var(--line);background:linear-gradient(180deg,#10231e,#0b1714);border-radius:22px;padding:24px;margin-top:28px}.rule{padding:13px 0;border-bottom:1px solid var(--line)}.rule:last-child{border:0}.ok{color:var(--accent)}.warn{color:var(--warn)}input[type=password]{width:100%;border:1px solid var(--line);background:#07120f;color:var(--ink);border-radius:12px;padding:13px;margin:8px 0 14px;font-size:16px}label.check{display:flex;gap:10px;align-items:flex-start;margin:18px 0;color:var(--muted)}button{border:0;background:var(--accent);color:#042016;border-radius:999px;padding:12px 20px;font-weight:800;cursor:pointer;font-size:15px}.small{font-size:13px;color:var(--muted)}a{color:var(--accent)}code{background:#07120f;border:1px solid var(--line);padding:2px 5px;border-radius:6px}</style>
+</head>
+<body><main>
+<div class="eyebrow">CivicOS / Invite-only first tester pilot</div>
+<h1>Test the next action — not blind trust.</h1>
+<p class="lead">CivicOS is an evidence-to-action prototype. It can help you inspect benefits, public-money evidence and administrative decisions, while showing uncertainty and why it recommends a next step.</p>
+
+<div class="panel">
+<div class="eyebrow">Before you enter</div>
+<div class="rule"><strong class="ok">✓ Experimental and bounded.</strong><br>This is a first-user pilot, not a government service, entitlement decision, lawyer, court, or autonomous investigator.</div>
+<div class="rule"><strong class="ok">✓ No automatic consequential action.</strong><br>CivicOS may prepare or recommend. It does not submit applications, objections, accusations or external actions for you.</div>
+<div class="rule"><strong class="ok">✓ Personal decision documents are processed in memory.</strong><br>The CivicOS application hashes the upload and does not persist the original document bytes. Use a redacted copy whenever possible.</div>
+<div class="rule"><strong class="warn">Please do not upload high-risk secrets.</strong><br>No passwords, authentication codes, bank credentials, medical records, criminal-case material, intimate information, or identity-document scans. Remove case/account numbers and unnecessary names where possible.</div>
+<div class="rule"><strong>Adults only for this pilot.</strong><br>Household scenarios may include children's ages, but do not enter children's names or sensitive personal details.</div>
+</div>
+
+<form class="panel" method="post" action="/pilot/access">
+<div class="eyebrow">Your invite</div>
+<label for="code"><strong>Pilot invite code</strong></label>
+<input id="code" name="code" type="password" autocomplete="off" required placeholder="Enter your invite code">
+<label class="check"><input name="consent" value="accepted" type="checkbox" required><span>I am 18+, I understand this is an experimental pilot, I will verify consequential guidance with the relevant official source/professional, and I accept the data-minimisation rules above.</span></label>
+<button type="submit">Enter CivicOS Pilot →</button>
+<p class="small">Access lasts up to 8 hours in a signed HttpOnly session cookie. In deployed pilot mode cookies are Secure + SameSite=Strict. The CivicOS app does not intentionally log request bodies; hosting infrastructure may still process connection/operational metadata under its own configuration.</p>
+</form>
+
+<div class="panel">
+<div class="eyebrow">What we want you to test</div>
+<p><strong>Can you understand the evidence, spot uncertainty, and know what to do next?</strong></p>
+<p class="small">Start with the synthetic examples first. If those make sense, try a redacted real situation. If CivicOS is confusing, wrong, overconfident or unsafe, that is exactly the feedback we need.</p>
+<p><a href="https://github.com/mikelninh/CivicOs/issues/new?template=pilot-feedback.yml">Send pilot feedback on GitHub ↗</a> · <a href="/readiness/ui">See what CivicOS still does not claim ↗</a></p>
+</div>
+</main></body></html>

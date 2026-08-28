@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0-rc1",
+  "sources": {
+    "service_berlin": {"claim_ids":["service:authority-follows-service","municipal:service-before-routing"],"golden_case_ids":["citizen-authority-responsibility","operator-permit-routing","operator-policy-change-impact"]},
+    "berlin_authorities": {"claim_ids":["service:authority-follows-service","municipal:service-before-routing"],"golden_case_ids":["citizen-authority-responsibility","operator-permit-routing"]},
+    "berlin_mietpreis": {"claim_ids":["housing:notice-needs-review"],"golden_case_ids":["citizen-rent-increase"]},
+    "berlin_ifg": {"claim_ids":["ifg:record-holder-first"],"golden_case_ids":["citizen-information-request"]},
+    "berlin_ifg_guidance": {"claim_ids":["ifg:record-holder-first"],"golden_case_ids":["citizen-information-request"]},
+    "police_digital_violence": {"claim_ids":["safety:preserve-before-report"],"golden_case_ids":["citizen-digital-harassment"]},
+    "police_digital_evidence": {"claim_ids":["safety:preserve-before-report"],"golden_case_ids":["citizen-digital-harassment"]},
+    "berlin_wohngeld": {"claim_ids":["benefit:wohngeld"],"golden_case_ids":["citizen-benefits-gap","citizen-wohngeld-rejection"]},
+    "berlin_wohngeldrechner": {"claim_ids":["benefit:wohngeld"],"golden_case_ids":["citizen-benefits-gap","citizen-wohngeld-rejection"]},
+    "arbeitsagentur_kiz": {"claim_ids":["benefit:kinderzuschlag"],"golden_case_ids":["citizen-benefits-gap"]},
+    "arbeitsagentur_kiz_lotse": {"claim_ids":["benefit:kinderzuschlag"],"golden_case_ids":["citizen-benefits-gap"]},
+    "familienportal_elterngeld_amount": {"claim_ids":["benefit:elterngeld"],"golden_case_ids":["citizen-benefits-gap"]},
+    "familienportal_elterngeld_eligibility": {"claim_ids":["benefit:elterngeld"],"golden_case_ids":["citizen-benefits-gap"]},
+    "familienportal_elterngeld_calculator": {"claim_ids":["benefit:elterngeld"],"golden_case_ids":["citizen-benefits-gap"]},
+    "familienportal_unterhaltsvorschuss": {"claim_ids":["benefit:unterhaltsvorschuss"],"golden_case_ids":["citizen-benefits-gap"]},
+    "berlin_but_service": {"claim_ids":["benefit:bildung-teilhabe"],"golden_case_ids":["citizen-benefits-gap"]},
+    "berlin_procurement_awards": {"claim_ids":["public-money:award","public-money:vendor"],"golden_case_ids":["investigator-public-money","investigator-procurement-pattern","investigator-supplier-links"]},
+    "bundeshaushalt": {"claim_ids":["public-money:budget"],"golden_case_ids":["investigator-public-money"]},
+    "bundesrechnungshof": {"claim_ids":["public-money:audit"],"golden_case_ids":["investigator-public-money","investigator-procurement-pattern"]},
+    "unternehmensregister": {"claim_ids":["public-money:legal-entity","investigation:control-conflict"],"golden_case_ids":["investigator-public-money","investigator-supplier-links","investigator-contradictory-records"]},
+    "vwvfg": {"claim_ids":["decision:cited-provisions","decision:reasoning-present","decision:remedy-language-present"],"golden_case_ids":["citizen-wohngeld-rejection","operator-policy-change-impact"]},
+    "gesetze_im_internet": {"claim_ids":["decision:cited-provisions","policy:change-needs-effective-date"],"golden_case_ids":["citizen-wohngeld-rejection","operator-policy-change-impact"]}
+  }
+}

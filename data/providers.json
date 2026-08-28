@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "providers": {
+    "safetrace": {"repo":"mikelninh/digital-democracy-studio","path":"safetrace","capabilities":["entity_resolution","claim_ledger","provenance","temporal_relationships","investigation_graph"],"integration":"adapter"},
+    "gitlaw": {"repo":"mikelninh/gitlaw","capabilities":["legal_retrieval","paragraph_graph","citation_verification","rag","mcp"],"integration":"adapter"},
+    "pruefpilot": {"repo":"mikelninh/pruefpilot","capabilities":["document_extraction","typed_intake","evidence_checklists"],"integration":"adapter"},
+    "public_money_mcp": {"repo":"mikelninh/pmm-mcp","capabilities":["budget_lookup","audit_context","public_money_tools"],"integration":"mcp"},
+    "citizen_agents": {"repo":"mikelninh/citizen-agents","capabilities":["change_monitoring","source_watch","cited_change_logs"],"integration":"events"},
+    "safevoice": {"repo":"mikelninh/safevoice","capabilities":["evidence_intake","hashing","privacy_aware_case_packaging"],"integration":"adapter"},
+    "judge_mcp": {"repo":"mikelninh/judge-mcp","capabilities":["evaluation","verification","regression_checks"],"integration":"mcp"},
+    "digital_worker_factory": {"repo":"mikelninh/digital-worker-factory","capabilities":["tool_permissions","policy_gates","human_approval","audit_replay"],"integration":"runtime"}
+  }
+}

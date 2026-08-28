@@ -1,0 +1,77 @@
+name: CivicOS pilot feedback
+description: Tell us where the first-user pilot was useful, confusing, wrong, or unsafe.
+title: "[pilot] "
+labels: ["pilot-feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing CivicOS. **Do not paste personal documents, names, addresses, case numbers, account numbers, health information, passwords, or other sensitive data into this issue.** Describe the workflow using a synthetic or redacted summary.
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Workflow
+      options:
+        - Benefits Graph
+        - Decision Review
+        - Public Money Graph
+        - Watchtower
+        - Other golden case
+    validations:
+      required: true
+  - type: dropdown
+    id: task_success
+    attributes:
+      label: Did you know what to do next after using CivicOS?
+      options:
+        - Yes, clearly
+        - Partly
+        - No
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence_clear
+    attributes:
+      label: Could you understand why CivicOS made its recommendation?
+      options:
+        - Yes, clearly
+        - Partly
+        - No
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Did anything feel wrong, overconfident, misleading, or unsafe?
+      options:
+        - No
+        - Yes — minor
+        - Yes — important
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      description: Use a synthetic/redacted description only.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead, or what worked especially well?
+      description: Please avoid personal or identifying information.
+    validations:
+      required: true
+  - type: input
+    id: time_to_action
+    attributes:
+      label: Approximate time until you understood the next action
+      placeholder: e.g. 2 minutes
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed personal/sensitive information from this feedback.
+          required: true

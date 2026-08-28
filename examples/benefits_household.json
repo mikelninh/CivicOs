@@ -1,0 +1,14 @@
+{
+  "location":"Berlin",
+  "children":2,
+  "child_ages":[5,9],
+  "household_size":3,
+  "monthly_household_income":2000,
+  "monthly_rent":1100,
+  "housing_costs":1100,
+  "single_parent":true,
+  "child_support_status":"irregular",
+  "kindergeld_status":"received",
+  "benefits_received":[],
+  "housing_transfer_benefit_status":"none"
+}

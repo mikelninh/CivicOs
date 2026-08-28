@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0-rc1",
+  "reviewed_at": "2026-08-28",
+  "policy": "Baselines are semantic expectations reviewed by a human. Watchtower may detect changes automatically but never auto-promotes a new baseline.",
+  "sources": {
+    "arbeitsagentur_kiz": {
+      "facts": [
+        {"fact_id":"kiz:max-per-child","claim_id":"benefit:kinderzuschlag","source_id":"arbeitsagentur_kiz","receipt_id":"baseline:2026-08-28","label":"Kinderzuschlag maximum per child/month","value":297,"status":"verified"}
+      ]
+    },
+    "familienportal_elterngeld_amount": {
+      "facts": [
+        {"fact_id":"elterngeld:basis-range","claim_id":"benefit:elterngeld","source_id":"familienportal_elterngeld_amount","receipt_id":"baseline:2026-08-28","label":"Basiselterngeld monthly range","value":"€300–€1,800","status":"verified"},
+        {"fact_id":"elterngeld:plus-range","claim_id":"benefit:elterngeld","source_id":"familienportal_elterngeld_amount","receipt_id":"baseline:2026-08-28","label":"ElterngeldPlus monthly range","value":"€150–€900","status":"verified"}
+      ]
+    },
+    "familienportal_elterngeld_eligibility": {
+      "facts": [
+        {"fact_id":"elterngeld:hours","claim_id":"benefit:elterngeld","source_id":"familienportal_elterngeld_eligibility","receipt_id":"baseline:2026-08-28","label":"Maximum weekly work-hours signal","value":32,"status":"verified"},
+        {"fact_id":"elterngeld:income-ceiling","claim_id":"benefit:elterngeld","source_id":"familienportal_elterngeld_eligibility","receipt_id":"baseline:2026-08-28","label":"Taxable-income ceiling signal","value":175000,"status":"verified"}
+      ]
+    },
+    "familienportal_unterhaltsvorschuss": {
+      "facts": [
+        {"fact_id":"uv:0-5","claim_id":"benefit:unterhaltsvorschuss","source_id":"familienportal_unterhaltsvorschuss","receipt_id":"baseline:2026-08-28","label":"Unterhaltsvorschuss age 0–5 monthly amount","value":227,"status":"verified"},
+        {"fact_id":"uv:6-11","claim_id":"benefit:unterhaltsvorschuss","source_id":"familienportal_unterhaltsvorschuss","receipt_id":"baseline:2026-08-28","label":"Unterhaltsvorschuss age 6–11 monthly amount","value":299,"status":"verified"},
+        {"fact_id":"uv:12-17","claim_id":"benefit:unterhaltsvorschuss","source_id":"familienportal_unterhaltsvorschuss","receipt_id":"baseline:2026-08-28","label":"Unterhaltsvorschuss age 12–17 monthly amount","value":394,"status":"verified"}
+      ]
+    },
+    "berlin_but_service": {
+      "facts": [
+        {"fact_id":"but:school-supplies","claim_id":"benefit:bildung-teilhabe","source_id":"berlin_but_service","receipt_id":"baseline:2026-08-28","label":"Berlin school-supplies support signal","value":195,"status":"verified"}
+      ]
+    },
+    "berlin_wohngeld": {
+      "facts": [
+        {"fact_id":"wohngeld:calculation-factors","claim_id":"benefit:wohngeld","source_id":"berlin_wohngeld","receipt_id":"baseline:2026-08-28","label":"Wohngeld calculation factors present","value":["household","rent","income"],"status":"verified"}
+      ]
+    }
+  }
+}

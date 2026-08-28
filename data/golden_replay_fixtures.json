@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0-rc1",
+  "fixtures": {
+    "citizen-benefits-gap": {
+      "runner": "engine",
+      "vertical": "benefits",
+      "maturity": "flagship",
+      "payload": {"location":"Berlin","children":2,"child_ages":[5,9],"household_size":3,"monthly_household_income":2000,"monthly_rent":1100,"housing_costs":1100,"single_parent":true,"child_support_status":"irregular","kindergeld_status":"received","benefits_received":[],"housing_transfer_benefit_status":"none"}
+    },
+    "citizen-wohngeld-rejection": {
+      "runner": "engine",
+      "vertical": "decision-review",
+      "maturity": "flagship",
+      "payload": {"text":"Wohngeldstelle Berlin\nBescheid vom 20.08.2026\nIhr Antrag wird abgelehnt.\nBegründung: Die eingereichten Unterlagen seien nicht vollständig. Die Behörde verweist auf § 39 VwVfG.\nRechtsbehelfsbelehrung: Bitte beachten Sie die im Originalbescheid genannte Rechtsbehelfsfrist und zuständige Stelle."}
+    },
+    "citizen-rent-increase": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"housing-rights",
+      "payload": {
+        "domain":"housing-rights",
+        "source_ids":["berlin_mietpreis","service_berlin"],
+        "provider_contracts":["GitLaw legal retrieval/citation verification"],
+        "summary":"The safest first step is to verify the actual rent notice, calculation basis and dates before accepting or contesting the increase.",
+        "claims":[{"claim_id":"housing:notice-needs-review","text":"A rent increase cannot be assessed responsibly without the notice, dates, old/new rent and stated legal/calculation basis.","status":"supported","confidence":1.0,"details":{"scope":"workflow fact, not legal conclusion"}}],
+        "action":{"action_id":"housing:collect-and-check-notice","title":"Check the rent notice before responding","why":"Separate the landlord's stated basis, dates and amounts from what the current official rules and local comparison data support.","official_route":"https://service.berlin.de/dienstleistung/355534/","missing_evidence":["rent increase notice","current net cold rent","proposed net cold rent","effective date","stated basis"],"requires_human_approval":true,"consequence":"preparatory","priority":96,"proof":["official Berlin rent-check route","document-first review boundary"]},
+        "uncertainties":["This golden scenario does not determine whether a specific rent increase is legally valid.","A full workflow needs the actual notice plus current applicable tenancy-law retrieval."]
+      }
+    },
+    "citizen-digital-harassment": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"digital-safety",
+      "payload": {
+        "domain":"digital-safety",
+        "source_ids":["police_digital_violence","police_digital_evidence"],
+        "provider_contracts":["SafeVoice evidence intake/privacy packaging"],
+        "summary":"Preserve the original digital evidence first, then choose the safest reporting/support route based on urgency.",
+        "claims":[{"claim_id":"safety:preserve-before-report","text":"Evidence can disappear after content is deleted or reported, so preservation should precede platform reporting where safe and lawful.","status":"supported","confidence":0.98,"details":{"scope":"official police prevention guidance"}}],
+        "action":{"action_id":"safety:preserve-evidence","title":"Preserve the evidence safely first","why":"Keep message/content context, dates, usernames and URLs before reporting or blocking; use emergency services for acute threats.","official_route":"https://www.polizei-beratung.de/themen-und-tipps/gefahren-im-internet/digitale-gewalt/","missing_evidence":["original URLs/content","timestamps","account/user identifiers","threat urgency"],"requires_human_approval":true,"consequence":"preparatory","priority":100,"proof":["official police guidance","SafeVoice provider boundary"]},
+        "uncertainties":["CivicOS does not decide whether conduct constitutes a criminal offence.","Do not capture or redistribute illegal sexual-abuse material; contact police instead."]
+      }
+    },
+    "citizen-authority-responsibility": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"public-services",
+      "payload": {
+        "domain":"public-services","source_ids":["service_berlin","berlin_authorities"],"provider_contracts":["City Knowledge Graph authority routing"],
+        "summary":"Identify the official service first, then resolve the responsible authority and location-specific office from that service record.",
+        "claims":[{"claim_id":"service:authority-follows-service","text":"Authority routing should be grounded in an official service/authority record rather than guessed from the user's wording.","status":"supported","confidence":1.0}],
+        "action":{"action_id":"service:resolve-authority","title":"Resolve the official service and responsible authority","why":"The ServicePortal links administrative services to responsible bodies; start from the service record and location facts.","official_route":"https://service.berlin.de/","missing_evidence":["exact administrative need","Berlin district/location where relevant"],"requires_human_approval":false,"consequence":"informational","priority":100,"proof":["ServicePortal service directory","Berlin authority directory"]},
+        "uncertainties":["A generic question can map to multiple services; CivicOS must not invent one responsible authority without enough case context."]
+      }
+    },
+    "citizen-information-request": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"transparency",
+      "payload": {
+        "domain":"transparency","source_ids":["berlin_ifg","berlin_ifg_guidance"],"provider_contracts":["GitLaw current-law verification","Digital Worker Factory approval gate"],
+        "summary":"Identify the record-holding Berlin public body and make the information request specific enough to locate the records.",
+        "claims":[{"claim_id":"ifg:record-holder-first","text":"A Berlin information-access request should be directed to the public body that holds the requested records, with the records described as specifically as possible.","status":"supported","confidence":0.98}],
+        "action":{"action_id":"ifg:prepare-request","title":"Prepare a specific records request to the record-holding body","why":"Name the decision/topic, time period and records sought, then verify the correct public body before sending.","official_route":"https://www.berlin.de/sen/inneres/buerger-und-staat/datenschutz-und-informationsfreiheit/informationsfreiheit/artikel.23940.php","missing_evidence":["record-holding public body","decision/topic","time period","specific records sought"],"requires_human_approval":true,"consequence":"preparatory","priority":98,"proof":["official Berlin IFG guidance","human approval before external submission"]},
+        "uncertainties":["Exceptions, fees and other legal regimes can affect access; this scenario does not determine final disclosure entitlement."]
+      }
+    },
+    "investigator-supplier-links": {
+      "runner":"engine","vertical":"public-money","maturity":"flagship",
+      "payload":[{"award_id":"A-1","vendor":"Nordlicht Daten GmbH","value_eur":120000,"vendor_record":{"record_id":"v1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}},{"award_id":"A-2","vendor":"NORDLICHT DATEN","value_eur":85000,"vendor_record":{"record_id":"v2","name":"NORDLICHT DATEN","address":"Karl Marx Allee 88 10243 Berlin","domain":"www.nordlicht-daten.de","directors":["L. Winter"]}}]
+    },
+    "investigator-public-money": {
+      "runner":"engine","vertical":"public-money","maturity":"flagship",
+      "payload":{"awards":[{"award_id":"A-42","authority":"Land Berlin","title":"Example IT service","vendor":"Nordlicht Daten GmbH","value_eur":120000,"vendor_record":{"record_id":"vendor-a1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}}],"payments":[{"payment_id":"P-1","award_id":"A-42","recipient":"Nordlicht Daten GmbH","amount_eur":60000,"recipient_record":{"record_id":"recipient-a1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}}]}
+    },
+    "investigator-procurement-pattern": {
+      "runner":"engine","vertical":"public-money","maturity":"flagship",
+      "payload":[{"award_id":"A-1","vendor":"Nordlicht Daten GmbH","value_eur":120000,"vendor_record":{"record_id":"v1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}},{"award_id":"A-2","vendor":"Nordlicht Daten","value_eur":85000,"vendor_record":{"record_id":"v2","name":"NORDLICHT DATEN","address":"Karl Marx Allee 88 10243 Berlin","domain":"www.nordlicht-daten.de","directors":["L. Winter"]}}]
+    },
+    "investigator-contradictory-records": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"investigative-evidence",
+      "payload": {
+        "domain":"investigative-evidence","source_ids":["unternehmensregister"],"provider_contracts":["SafeTrace temporal relationships","SafeTrace claim/counterclaim ledger"],
+        "summary":"Keep the control relationship unresolved until dated primary records explain whether the disagreement is a real contradiction or a time-version difference.",
+        "claims":[{"claim_id":"investigation:control-conflict","text":"Conflicting control/director records should remain disputed until source dates, identifiers and legal entities are reconciled.","status":"disputed","confidence":0.8}],
+        "action":{"action_id":"investigation:resolve-temporal-conflict","title":"Compare dated primary register records","why":"Check stable legal-entity identifiers and validity dates before choosing either control claim.","official_route":"https://www.unternehmensregister.de/de/so-gehts/registerinformationen?language=de","missing_evidence":["stable company identifier","record A effective date","record B effective date","original register extracts"],"requires_human_approval":true,"consequence":"preparatory","priority":99,"proof":["official company register route","temporal relationship boundary"]},
+        "uncertainties":["Different directors/controllers at different dates may both be correct.","A relationship conflict is not evidence of wrongdoing."]
+      }
+    },
+    "operator-permit-routing": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"municipal-operations",
+      "payload": {
+        "domain":"municipal-operations","source_ids":["service_berlin","berlin_authorities"],"provider_contracts":["City Knowledge Graph responsibility graph","Digital Worker Factory human approval"],
+        "summary":"Resolve the exact permit/service, responsible authority and required evidence before diagnosing where a case is blocked.",
+        "claims":[{"claim_id":"municipal:service-before-routing","text":"Permit routing should begin from the exact official service and location, not a guessed department name.","status":"supported","confidence":1.0}],
+        "action":{"action_id":"municipal:resolve-service-path","title":"Resolve service → authority → evidence → current handoff","why":"A reliable blocker diagnosis requires the official service record, responsible office and case's current workflow stage.","official_route":"https://service.berlin.de/","missing_evidence":["exact permit/service","project location","current case status","submitted evidence list"],"requires_human_approval":true,"consequence":"preparatory","priority":98,"proof":["official service routing","responsibility graph contract"]},
+        "uncertainties":["This scenario does not infer a department or approval path without an exact service and location."]
+      }
+    },
+    "operator-policy-change-impact": {
+      "runner":"scenario","maturity":"bounded-golden","domain":"policy-operations",
+      "payload": {
+        "domain":"policy-operations","source_ids":["gesetze_im_internet","service_berlin"],"provider_contracts":["Citizen Agents change monitor","GitLaw paragraph graph","Watchtower regression"],
+        "summary":"Verify the changed provision and effective date, then map only evidence-linked services/cases into the impact set before changing guidance.",
+        "claims":[{"claim_id":"policy:change-needs-effective-date","text":"A detected text change does not establish operational impact until the changed provision, effective date and affected services/cases are linked.","status":"supported","confidence":1.0}],
+        "action":{"action_id":"policy:verify-and-map-impact","title":"Verify the rule change, then rerun affected services/cases","why":"Separate publication/text change from legal effective date and operational impact; use the dependency graph to select reruns.","official_route":"https://www.gesetze-im-internet.de/","missing_evidence":["changed provision","effective date","service dependency edges","affected open-case cohort"],"requires_human_approval":true,"consequence":"preparatory","priority":100,"proof":["GitLaw verification boundary","Watchtower rerun contract"]},
+        "uncertainties":["A changed legal text is not automatically applicable to every existing case.","Operational guidance should not update until affected golden cases pass review."]
+      }
+    }
+  }
+}
