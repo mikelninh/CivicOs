@@ -37,6 +37,11 @@ def home():
     return (ROOT / "web" / "index.html").read_text(encoding="utf-8")
 
 
+@app.get("/watchtower", response_class=HTMLResponse)
+def watchtower_page():
+    return (ROOT / "web" / "watchtower.html").read_text(encoding="utf-8")
+
+
 @app.get("/health")
 def health():
     return {
