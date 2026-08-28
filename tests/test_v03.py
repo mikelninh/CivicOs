@@ -21,7 +21,7 @@ def test_live_refresh_attaches_receipt(monkeypatch):
 
 
 def test_uploaded_text_is_hashed_and_not_persisted():
-    content = b"Bescheid vom 20.08.2026\nBegruendung\nRechtsbehelfsbelehrung\n§ 39 VwVfG"
+    content = "Bescheid vom 20.08.2026\nBegruendung\nRechtsbehelfsbelehrung\n§ 39 VwVfG".encode("utf-8")
     intake = ingest_decision_document("bescheid.txt", content, "text/plain")
     assert intake.status == "ready"
     assert intake.sha256
