@@ -6,9 +6,15 @@
 
 CivicOS connects official sources, entities, rules, evidence, public money, responsibilities, uncertainty, source changes and safe next actions through one inspectable runtime.
 
-## v1.0 release candidate
+## v1.0 first-tester release candidate
 
-CivicOS `1.0.0-rc1` defines a **master-proof release** with a machine-enforced readiness gate. It does **not** claim production public-service readiness.
+CivicOS `1.0.0-rc2` separates **three release gates** instead of hiding everything behind one green badge:
+
+1. **Master proof — READY**: architecture, evidence and safety contract.
+2. **Invite-only first-tester pilot — READY at build level**: controlled adult cohort with explicit consent and ephemeral personal evidence.
+3. **Public beta — NOT YET**: production IAM/security, domain validation, representative evaluation and missing authoritative providers remain open.
+
+The deployment-specific pilot gate still requires `CIVICOS_PILOT_MODE=true` and a secret configured outside Git.
 
 ### The three flagship verticals
 
@@ -21,9 +27,48 @@ Budget → award → SafeTrace legal entity → reference + entity-based payment
 **Decision Review**  
 Bescheid → hashed/untrusted intake → authority/outcome/factual basis → cited rules → evidence gaps → dates/remedy questions → reviewable next step.
 
+## Invite-only first-tester pilot
+
+The pilot is designed for **5–15 trusted adult testers**, not an open public launch.
+
+When pilot mode is enabled:
+
+- all write/research endpoints require an invite code or signed pilot session;
+- explicit pilot consent is enforced server-side;
+- the invite becomes a signed HttpOnly session cookie rather than being stored in browser JavaScript;
+- deployed cookies default to `Secure` + `SameSite=Strict` and expire after eight hours;
+- personal PDF/text decision uploads are processed in memory and the application does not persist the original document bytes;
+- uploads are capped at 5 MB by default and limited to PDF/plain text;
+- application responses use `Cache-Control: no-store` plus browser security headers;
+- a bounded per-session rate limit avoids retaining IP addresses for the application-level limiter;
+- consequential external actions remain human-approved;
+- tester feedback is collected through a privacy-minimising GitHub issue template.
+
+Pilot portal: `/pilot`
+
+Pilot policy: `data/pilot_policy.json`
+
+Pilot runbook: [`docs/PILOT_RELEASE.md`](docs/PILOT_RELEASE.md)
+
+Required deployment environment:
+
+```bash
+CIVICOS_PILOT_MODE=true
+CIVICOS_PILOT_TOKEN=<long-random-secret>
+CIVICOS_PILOT_SECURE_COOKIES=true
+```
+
+Generate the secret locally, for example:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Never commit the invite secret.
+
 ## 12 executable golden cases
 
-The v1 master-proof contract now replays all twelve cases:
+The v1 master-proof contract replays all twelve cases:
 
 - Wohngeld rejection
 - missing benefits/support
@@ -79,25 +124,32 @@ human authority gate
 
 ## Release readiness
 
-`GET /readiness` separates two gates:
+`GET /readiness` exposes all three gates.
 
-### v1 master proof
+### Master proof
 
-Requires 12/12 executable cases, all deterministic replays passing, three flagship verticals, Watchtower scheduling/baselines, durable state adapter, current official-source registry and CI release gate.
+Requires 12/12 executable cases, all deterministic replays passing, source-impact coverage, three flagship verticals, Watchtower scheduling/baselines, durable state adapter, current official-source registry and CI release gate.
 
-### public beta
+### First tester pilot
+
+Requires the master proof plus invite-only guard, explicit adult consent, non-persistent personal document bytes, bounded uploads, no-store/security headers, rate limiting, machine-readable pilot policy, tester runbook, privacy-minimising feedback path and pilot regression tests.
+
+CI enforces this with `scripts/check_pilot_gate.py`.
+
+### Public beta
 
 Intentionally remains **not ready** until CivicOS has:
 
-- encrypted persisted personal evidence;
-- authentication/authorisation, IAM and retention/deletion controls;
+- production authentication/authorisation/IAM;
+- encrypted persisted personal evidence where persistence is actually needed;
+- retention/deletion and operational security controls;
 - qualified benefits + administrative-law review;
 - representative user evaluation;
 - genuine recipient/payment-level public-money data;
 - authoritative company identifiers + temporal ownership/control;
 - production security/observability review.
 
-See [`docs/V1_RELEASE.md`](docs/V1_RELEASE.md) and [`docs/READINESS.md`](docs/READINESS.md).
+See [`docs/V1_RELEASE.md`](docs/V1_RELEASE.md), [`docs/PILOT_RELEASE.md`](docs/PILOT_RELEASE.md), and [`docs/READINESS.md`](docs/READINESS.md).
 
 ## Providers, not a monolith
 
@@ -112,11 +164,13 @@ See [`docs/V1_RELEASE.md`](docs/V1_RELEASE.md) and [`docs/READINESS.md`](docs/RE
 
 ## Main surfaces
 
-- `/` — v1 master-proof home
+- `/` — v1 home
+- `/pilot` — invite + consent entry for first testers
 - `/lab` — interactive Benefits / Public Money / Decision Review proof
 - `/watchtower` — semantic-change replay UI
-- `/readiness/ui` — human-readable release gates
+- `/readiness/ui` — human-readable three-gate release status
 - `/readiness` — machine-readable release gates
+- `/pilot/status` — pilot runtime policy/config state without exposing the secret
 - `/docs` — FastAPI/OpenAPI
 
 ## Run
@@ -125,6 +179,7 @@ See [`docs/V1_RELEASE.md`](docs/V1_RELEASE.md) and [`docs/READINESS.md`](docs/RE
 python -m pip install -e ".[dev]"
 pytest -q
 python scripts/check_release_gate.py
+python scripts/check_pilot_gate.py
 uvicorn app:app --reload
 ```
 
