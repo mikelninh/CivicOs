@@ -7,13 +7,15 @@ from civicos.connectors.official import REGISTRY, SourceError, fetch_official
 from civicos.core.evidence import make_receipt
 from civicos.core.evidence_vault import EvidenceVault
 from civicos.core.live_evidence import refresh_case_sources
+from civicos.core.models import EvidenceFact
 from civicos.core.providers import PROVIDERS
+from civicos.core.source_change import evaluate_source_change
 from civicos.core.source_evidence import extract_live_facts
 from civicos.providers.pruefpilot import ingest_decision_document
 from civicos.verticals.decision_review import attach_document_evidence, review_decision
 
 ROOT = Path(__file__).resolve().parent
-app = FastAPI(title="CivicOS", version="0.4.0", description="Evidence-to-action civic infrastructure")
+app = FastAPI(title="CivicOS", version="0.5.0", description="Evidence-to-action civic infrastructure")
 
 
 class RunRequest(BaseModel):
@@ -21,6 +23,11 @@ class RunRequest(BaseModel):
     payload: dict | list | str
     refresh_sources: bool = False
     persist_public_evidence: bool = False
+
+
+class SourceCompareRequest(BaseModel):
+    previous_sha256: str | None = None
+    previous_facts: list[dict] = []
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -33,9 +40,9 @@ def health():
     return {
         "ok": True,
         "product": "CivicOS",
-        "version": "0.4.0",
+        "version": "0.5.0",
         "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?",
-        "evidence_contract": "receipt -> narrow verified fact -> claim -> next action",
+        "evidence_contract": "source -> receipt -> verified fact -> claim -> change impact -> regression case -> next action",
     }
 
 
@@ -62,6 +69,35 @@ def fetch_source(source_id: str, persist: bool = False):
             "receipt": receipt.model_dump(mode="json"),
             "verified_facts": [fact.model_dump(mode="json") for fact in facts],
             "evidence_excerpts": [excerpt.model_dump(mode="json") for excerpt in excerpts],
+            "raw_returned": False,
+        }
+    except SourceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.post("/sources/{source_id}/compare")
+def compare_source(source_id: str, req: SourceCompareRequest):
+    """Live-fetch a source and report which claims/golden cases need re-checking.
+
+    The caller supplies the previous receipt hash/facts from its own evidence store.
+    CivicOS does not invent history when no previous snapshot exists.
+    """
+    try:
+        receipt, body = fetch_official(source_id)
+        excerpts, facts = extract_live_facts(source_id, body, receipt.receipt_id)
+        previous = [EvidenceFact.model_validate(item) for item in req.previous_facts]
+        impact = evaluate_source_change(
+            source_id,
+            previous_sha256=req.previous_sha256,
+            current_sha256=receipt.sha256,
+            previous_facts=previous,
+            current_facts=facts,
+        )
+        return {
+            "receipt": receipt.model_dump(mode="json"),
+            "current_facts": [fact.model_dump(mode="json") for fact in facts],
+            "evidence_excerpts": [excerpt.model_dump(mode="json") for excerpt in excerpts],
+            "impact": impact.model_dump(mode="json"),
             "raw_returned": False,
         }
     except SourceError as exc:
@@ -106,14 +142,14 @@ async def upload_decision(file: UploadFile = File(...), refresh_sources: bool = 
             "filename": intake.filename,
             "page_count": intake.page_count,
             "provider": intake.provider,
-            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.4",
+            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.5",
             "trust_level": "user_evidence_untrusted_content",
         }
     })
     result = result.model_copy(update={
         "evidence_receipts": [user_receipt],
         "audit": list(result.audit) + [{
-            "step": "pruefpilot_document_intake_v4",
+            "step": "pruefpilot_document_intake_v5",
             "filename": intake.filename,
             "sha256": intake.sha256,
             "bytes": intake.bytes_read,
