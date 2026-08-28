@@ -52,15 +52,17 @@ def test_watchtower_replays_affected_case_on_fact_change():
     assert replay.judge_request["execution"] == "request_ready_not_automatically_invoked"
 
 
-def test_unimplemented_golden_case_is_blocked_not_fake_passed():
-    replay = replay_golden_case("operator-policy-change-impact")
+def test_unknown_golden_case_is_blocked_not_fake_passed():
+    replay = replay_golden_case("not-a-real-golden-case")
     assert replay.status == "blocked"
     assert "refuses to fake" in replay.note
 
 
-def test_watchtower_status_exposes_provider_boundaries():
+def test_watchtower_status_exposes_provider_boundaries_and_closed_coverage_gap():
     status = watchtower_status()
-    assert status["version"] == "0.6.0"
+    assert status["version"] == "1.0.0-rc1"
     assert status["citizen_agents"]["provider"] == "mikelninh/citizen-agents"
     assert status["judge_mcp"]["provider"] == "mikelninh/judge-mcp"
+    assert status["executable_count"] == 12
     assert "citizen-benefits-gap" in status["executable_golden_cases"]
+    assert "operator-policy-change-impact" in status["executable_golden_cases"]
