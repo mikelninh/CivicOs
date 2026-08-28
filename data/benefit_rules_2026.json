@@ -1,0 +1,36 @@
+{
+  "version": "2026-08-28",
+  "status": "verified_snapshot",
+  "rules": {
+    "kinderzuschlag": {
+      "max_monthly_per_child_eur": 297,
+      "source_id": "arbeitsagentur_kiz",
+      "note": "Maximum amount; actual entitlement depends on household circumstances and must be checked against current official rules."
+    },
+    "elterngeld": {
+      "basis_min_monthly_eur": 300,
+      "basis_max_monthly_eur": 1800,
+      "plus_min_monthly_eur": 150,
+      "plus_max_monthly_eur": 900,
+      "taxable_income_ceiling_eur": 175000,
+      "max_weekly_work_hours": 32,
+      "income_ceiling_applies_to_births_from": "2025-04-01",
+      "source_ids": ["familienportal_elterngeld_amount", "familienportal_elterngeld_eligibility"],
+      "note": "Exact amount depends on pre/post-birth income and other case facts; use the official calculator/application route."
+    },
+    "unterhaltsvorschuss": {
+      "monthly_eur_by_age": {
+        "0-5": 227,
+        "6-11": 299,
+        "12-17": 394
+      },
+      "source_id": "familienportal_unterhaltsvorschuss",
+      "note": "Amounts shown by the official portal from 1 Jan 2025; reductions and additional conditions can apply."
+    },
+    "bildung_teilhabe_berlin": {
+      "school_supplies_eur": 195,
+      "source_id": "berlin_but_service",
+      "note": "Berlin service guidance; eligibility and application path depend on the underlying qualifying benefit."
+    }
+  }
+}
