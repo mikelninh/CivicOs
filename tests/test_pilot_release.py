@@ -75,6 +75,19 @@ def test_pilot_portal_sets_signed_http_only_session_and_consent(monkeypatch):
     assert run.status_code == 200
 
 
+def test_vercel_hosted_deployments_fail_closed_without_invite_secret(monkeypatch):
+    monkeypatch.setenv("VERCEL_ENV", "production")
+    monkeypatch.delenv("CIVICOS_PILOT_MODE", raising=False)
+    monkeypatch.delenv("CIVICOS_PILOT_TOKEN", raising=False)
+    with TestClient(app) as client:
+        status = client.get("/pilot/status")
+        run = client.post("/run", json=_benefits_body())
+    assert status.status_code == 200
+    assert status.json()["enabled"] is True
+    assert status.json()["hosted_fail_closed"] is True
+    assert run.status_code == 503
+
+
 def test_pilot_upload_size_is_hard_bounded(monkeypatch):
     _pilot_env(monkeypatch, max_bytes=1024)
     with TestClient(app) as client:
@@ -130,6 +143,7 @@ def test_responses_include_no_store_and_browser_security_headers(monkeypatch):
 
 
 def test_first_tester_release_gate_is_ready_without_claiming_public_beta(monkeypatch):
+    monkeypatch.delenv("VERCEL_ENV", raising=False)
     monkeypatch.delenv("CIVICOS_PILOT_MODE", raising=False)
     monkeypatch.delenv("CIVICOS_PILOT_TOKEN", raising=False)
     readiness = release_readiness()
