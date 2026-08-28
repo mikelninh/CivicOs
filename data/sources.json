@@ -1,16 +1,20 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "verified_at": "2026-08-28",
   "contract": {
     "verified_route": "Authoritative route checked on verified_at; not evidence that a current run fetched the content.",
     "live_fetch": "Current run fetched the allowlisted source and created a SHA-256 receipt."
   },
   "sources": {
-    "berlin_wohngeld": {"title":"Wohngeld - Mietzuschuss beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/120656/","verified_at":"2026-08-28","supports":["application route","eligibility factors","documents","responsibility"]},
+    "berlin_wohngeld": {"title":"Wohngeld - Mietzuschuss beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/120656/","verified_at":"2026-08-28","supports":["application route","eligibility factors","documents","responsibility","official calculator route"]},
     "familienportal_kiz": {"title":"Kinderzuschlag","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/kinderzuschlag","verified_at":"2026-08-28","supports":["eligibility pre-check","documents","application route"]},
-    "familienportal_elterngeld": {"title":"Elterngeld","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/elterngeld","verified_at":"2026-08-28","supports":["eligibility","calculation guidance","application route"]},
-    "familienportal_unterhaltsvorschuss": {"title":"Unterhaltsvorschuss","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/unterhaltsvorschuss","verified_at":"2026-08-28","supports":["eligibility","amount guidance","application route"]},
-    "berlin_but": {"title":"Das Bildungspaket","publisher":"Land Berlin","url":"https://www.berlin.de/sen/bjf/hilfe-und-unterstuetzung/bildungspaket/","verified_at":"2026-08-28","supports":["Berlin Bildung und Teilhabe","service routing","support categories"]},
+    "arbeitsagentur_kiz": {"title":"Kinderzuschlag: Anspruch, Höhe, Dauer","publisher":"Bundesagentur für Arbeit","url":"https://www.arbeitsagentur.de/familie-und-kinder/kinderzuschlag-verstehen/kinderzuschlag-anspruch-hoehe-dauer","verified_at":"2026-08-28","supports":["current maximum amount","eligibility conditions","duration"]},
+    "familienportal_elterngeld": {"title":"Elterngeld","publisher":"Familienportal des Bundes","url":"https://familienportal.de/elterngeld","verified_at":"2026-08-28","supports":["eligibility","application route","current income ceiling"]},
+    "familienportal_elterngeld_amount": {"title":"Wie viel Elterngeld kann ich bekommen?","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/elterngeld/faq/wie-viel-elterngeld-kann-ich-bekommen--124616","verified_at":"2026-08-28","supports":["Basiselterngeld min/max","ElterngeldPlus min/max","official calculator route"]},
+    "familienportal_elterngeld_eligibility": {"title":"Kann ich Elterngeld bekommen?","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/elterngeld/faq/kann-ich-elterngeld-bekommen--155116","verified_at":"2026-08-28","supports":["32-hour work condition","175000 euro taxable-income ceiling","household conditions"]},
+    "familienportal_unterhaltsvorschuss": {"title":"Unterhaltsvorschuss","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/unterhaltsvorschuss","verified_at":"2026-08-28","supports":["eligibility","current amount guidance","application route"]},
+    "berlin_but": {"title":"Das Bildungspaket","publisher":"Land Berlin","url":"https://www.berlin.de/sen/bjf/hilfe-und-unterstuetzung/bildungspaket/","verified_at":"2026-08-28","supports":["Berlin Bildung und Teilhabe","support categories"]},
+    "berlin_but_service": {"title":"Leistungen nach dem Bildungs- und Teilhabepaket beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/324466/","verified_at":"2026-08-28","supports":["application rules","required evidence","school supplies amount","service routing"]},
     "berlin_procurement_awards": {"title":"Informationen über vergebene Aufträge","publisher":"Land Berlin","url":"https://www.berlin.de/vergabeplattform/veroeffentlichungen/info-19-20/","verified_at":"2026-08-28","supports":["awarded contracts","contracting authorities","awarded vendors"]},
     "bundeshaushalt": {"title":"Bundeshaushalt digital","publisher":"Bundesministerium der Finanzen","url":"https://www.bundeshaushalt.de/DE/Bundeshaushalt-digital/bundeshaushalt-digital.html","verified_at":"2026-08-28","supports":["federal budget","budget titles","year comparison"]},
     "bundesrechnungshof": {"title":"Bundesrechnungshof Veröffentlichungen","publisher":"Bundesrechnungshof","url":"https://www.bundesrechnungshof.de/DE/2_veroeffentlichungen/veroeffentlichungen_node.html","verified_at":"2026-08-28","supports":["audit reports","audit context"]},
