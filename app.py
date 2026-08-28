@@ -7,7 +7,7 @@ from civicos.connectors.official import REGISTRY
 from civicos.core.providers import PROVIDERS
 
 ROOT = Path(__file__).resolve().parent
-app = FastAPI(title="CivicOS", version="0.1.0", description="Evidence-to-action civic infrastructure")
+app = FastAPI(title="CivicOS", version="0.2.0", description="Evidence-to-action civic infrastructure")
 
 class RunRequest(BaseModel):
     vertical: str
@@ -19,11 +19,11 @@ def home():
 
 @app.get("/health")
 def health():
-    return {"ok": True, "product": "CivicOS", "version": "0.1.0"}
+    return {"ok": True, "product": "CivicOS", "version": "0.2.0", "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?"}
 
 @app.get("/sources")
 def sources():
-    return {"sources": REGISTRY["sources"]}
+    return {"sources": REGISTRY["sources"], "verified_at": REGISTRY.get("verified_at")}
 
 @app.get("/providers")
 def providers():
