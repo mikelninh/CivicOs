@@ -3,12 +3,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from civicos.core.pilot import pilot_status
 from civicos.core.watchtower import REPLAY_FIXTURES, replay_all_golden_cases, watchtower_status
 
 ROOT = Path(__file__).resolve().parents[2]
 GOLDEN = json.loads((ROOT / "data" / "golden_cases.json").read_text(encoding="utf-8"))["cases"]
 SOURCES = json.loads((ROOT / "data" / "sources.json").read_text(encoding="utf-8"))
 IMPACT_MAP = json.loads((ROOT / "data" / "source_impact_map.json").read_text(encoding="utf-8"))
+PILOT_POLICY = json.loads((ROOT / "data" / "pilot_policy.json").read_text(encoding="utf-8"))
 
 
 def release_readiness(run_replays: bool = True) -> dict[str, Any]:
@@ -43,10 +45,45 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
     }
     master_ready = all(value is True for value in master_gates.values() if value is not None)
 
-    public_beta_gates = {
+    app_text = (ROOT / "app.py").read_text(encoding="utf-8")
+    pilot_policy_ok = (
+        PILOT_POLICY.get("mode") == "invite_only_first_testers"
+        and PILOT_POLICY.get("audience", {}).get("adults_only") is True
+        and PILOT_POLICY.get("data", {}).get("personal_document_bytes_persisted") is False
+        and PILOT_POLICY.get("authority", {}).get("automatic_external_actions") is False
+    )
+    upload_limit = int(PILOT_POLICY.get("limits", {}).get("max_upload_bytes", 0))
+    allowed_uploads = set(PILOT_POLICY.get("limits", {}).get("allowed_uploads", []))
+
+    pilot_gates = {
         "master_proof_ready": master_ready,
+        "invite_only_access_guard": (ROOT / "civicos" / "core" / "pilot.py").exists() and "require_pilot_access" in app_text,
+        "explicit_adult_consent_portal": (ROOT / "web" / "pilot.html").exists() and "pilot_consent" in app_text,
+        "personal_document_persistence_disabled": pilot_policy_ok and '"persisted": False' in app_text,
+        "bounded_pdf_text_uploads": 0 < upload_limit <= 5 * 1024 * 1024 and allowed_uploads == {"pdf", "txt"} and "status_code=413" in app_text,
+        "browser_no_store_and_security_headers": all(
+            marker in app_text
+            for marker in ["Cache-Control", "Content-Security-Policy", "X-Content-Type-Options", "Referrer-Policy"]
+        ),
+        "rate_limit_without_ip_retention": "enforce_rate_limit" in (ROOT / "civicos" / "core" / "pilot.py").read_text(encoding="utf-8"),
+        "machine_readable_pilot_policy": pilot_policy_ok,
+        "tester_release_runbook": (ROOT / "docs" / "PILOT_RELEASE.md").exists(),
+        "privacy_minimising_feedback_path": (ROOT / ".github" / "ISSUE_TEMPLATE" / "pilot-feedback.yml").exists(),
+        "pilot_regression_tests_present": (ROOT / "tests" / "test_pilot_release.py").exists(),
+    }
+    pilot_ready = all(value is True for value in pilot_gates.values())
+    runtime = pilot_status()
+    pilot_runtime_configured = bool(
+        runtime.get("enabled")
+        and runtime.get("invite_secret_configured")
+        and runtime.get("secure_cookies")
+    )
+
+    # These are intentionally stricter than the invite-only first-tester pilot.
+    public_beta_gates = {
+        "first_tester_pilot_ready": pilot_ready,
         "encrypted_persisted_personal_evidence": False,
-        "iam_and_retention_deletion_controls": False,
+        "production_iam_and_retention_deletion_controls": False,
         "qualified_domain_review_benefits_and_admin_law": False,
         "representative_user_evaluation": False,
         "genuine_recipient_payment_provider": False,
@@ -55,10 +92,14 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
     public_beta_ready = all(public_beta_gates.values())
 
     return {
-        "release_candidate": "1.0.0-rc1",
+        "release_candidate": "1.0.0-rc2",
         "master_proof_ready": master_ready,
+        "first_tester_pilot_ready": pilot_ready,
+        "pilot_runtime_configured": pilot_runtime_configured,
         "public_beta_ready": public_beta_ready,
         "master_proof_gates": master_gates,
+        "first_tester_pilot_gates": pilot_gates,
+        "pilot_runtime": runtime,
         "public_beta_gates": public_beta_gates,
         "golden_cases": {
             "catalog": len(GOLDEN),
@@ -73,6 +114,7 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
         "watchtower": watchtower_status(),
         "release_definition": {
             "v1_master_proof": "12/12 executable product/safety cases + 12/12 source-impact coverage + 3 deeper flagship verticals + live evidence/change monitoring + scheduled Watchtower + human authority boundaries.",
-            "public_beta": "Requires security/privacy controls, qualified domain review, representative users and missing authoritative data providers; v1 master-proof readiness must not be confused with public-service production readiness."
+            "first_tester_pilot": "Invite-only adults, explicit consent, signed short-lived session, no personal document persistence, bounded uploads, no-store responses, safe feedback path and hard stop conditions. Deployment still requires CIVICOS_PILOT_MODE=true and a secret configured outside Git.",
+            "public_beta": "Still requires production IAM/security/privacy controls, qualified domain review, representative users and missing authoritative data providers."
         },
     }
