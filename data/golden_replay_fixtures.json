@@ -1,0 +1,78 @@
+{
+  "version": "0.6.0",
+  "fixtures": {
+    "citizen-benefits-gap": {
+      "vertical": "benefits",
+      "payload": {
+        "location": "Berlin",
+        "children": 2,
+        "child_ages": [5, 9],
+        "household_size": 3,
+        "monthly_household_income": 2000,
+        "monthly_rent": 1100,
+        "housing_costs": 1100,
+        "single_parent": true,
+        "child_support_status": "irregular",
+        "kindergeld_status": "received",
+        "benefits_received": [],
+        "housing_transfer_benefit_status": "none"
+      }
+    },
+    "citizen-wohngeld-rejection": {
+      "vertical": "decision-review",
+      "payload": {
+        "text": "Wohngeldstelle Berlin\nBescheid vom 20.08.2026\nIhr Antrag wird abgelehnt.\nBegründung: Die eingereichten Unterlagen seien nicht vollständig. Die Behörde verweist auf § 39 VwVfG.\nRechtsbehelfsbelehrung: Bitte beachten Sie die im Originalbescheid genannte Rechtsbehelfsfrist und zuständige Stelle."
+      }
+    },
+    "investigator-public-money": {
+      "vertical": "public-money",
+      "payload": {
+        "awards": [
+          {
+            "award_id": "A-42",
+            "authority": "Land Berlin",
+            "title": "Example IT service",
+            "vendor": "Nordlicht Daten GmbH",
+            "value_eur": 120000,
+            "vendor_record": {
+              "record_id": "vendor-a1",
+              "name": "Nordlicht Daten GmbH",
+              "address": "Karl-Marx-Allee 88, 10243 Berlin",
+              "domain": "nordlicht-daten.de",
+              "directors": ["Lea Winter"]
+            }
+          }
+        ],
+        "payments": [
+          {
+            "payment_id": "P-1",
+            "award_id": "A-42",
+            "recipient": "Nordlicht Daten GmbH",
+            "amount_eur": 60000,
+            "recipient_record": {
+              "record_id": "recipient-a1",
+              "name": "Nordlicht Daten GmbH",
+              "address": "Karl-Marx-Allee 88, 10243 Berlin",
+              "domain": "nordlicht-daten.de",
+              "directors": ["Lea Winter"]
+            }
+          }
+        ]
+      }
+    },
+    "investigator-procurement-pattern": {
+      "vertical": "public-money",
+      "payload": [
+        {"award_id":"A-1","vendor":"Nordlicht Daten GmbH","value_eur":120000,"vendor_record":{"record_id":"v1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}},
+        {"award_id":"A-2","vendor":"Nordlicht Daten","value_eur":85000,"vendor_record":{"record_id":"v2","name":"NORDLICHT DATEN","address":"Karl Marx Allee 88 10243 Berlin","domain":"www.nordlicht-daten.de","directors":["L. Winter"]}}
+      ]
+    },
+    "investigator-supplier-links": {
+      "vertical": "public-money",
+      "payload": [
+        {"award_id":"A-1","vendor":"Nordlicht Daten GmbH","value_eur":120000,"vendor_record":{"record_id":"v1","name":"Nordlicht Daten GmbH","address":"Karl-Marx-Allee 88, 10243 Berlin","domain":"nordlicht-daten.de","directors":["Lea Winter"]}},
+        {"award_id":"A-2","vendor":"NORDLICHT DATEN","value_eur":85000,"vendor_record":{"record_id":"v2","name":"NORDLICHT DATEN","address":"Karl Marx Allee 88 10243 Berlin","domain":"www.nordlicht-daten.de","directors":["L. Winter"]}}
+      ]
+    }
+  }
+}
