@@ -4,6 +4,7 @@ from civicos.adapters.benefit_calculators import build_calculator_plans
 from civicos.connectors.official import source_ref
 from civicos.verticals.benefits import analyse_benefits
 from civicos.verticals.public_money import analyse_awards, query_public_money_provider
+from civicos.verticals.payment_reconciliation import reconcile_awards_and_payments
 from civicos.verticals.decision_review import review_decision
 
 
@@ -27,8 +28,10 @@ def run(vertical: str, payload: Any):
     if vertical == "public-money":
         if isinstance(payload, dict) and payload.get("tool"):
             return query_public_money_provider(payload)
+        if isinstance(payload, dict) and "awards" in payload and "payments" in payload:
+            return reconcile_awards_and_payments(list(payload.get("awards") or []), list(payload.get("payments") or []))
         if not isinstance(payload, list):
-            raise TypeError("Public Money Graph expects award records or a provider tool query")
+            raise TypeError("Public Money Graph expects award records, an awards+payments reconciliation object, or a provider tool query")
         return analyse_awards(payload)
     if vertical == "decision-review":
         if isinstance(payload, dict):
