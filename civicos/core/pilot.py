@@ -22,6 +22,7 @@ class PilotSettings:
     max_upload_bytes: int
     rate_limit_per_minute: int
     secure_cookies: bool
+    hosted_fail_closed: bool
     consent_version: str = PILOT_CONSENT_VERSION
     personal_evidence_persistence: bool = False
 
@@ -32,12 +33,19 @@ def _truthy(value: str | None) -> bool:
 
 def settings() -> PilotSettings:
     token = os.getenv("CIVICOS_PILOT_TOKEN", "")
+    explicit_mode = os.getenv("CIVICOS_PILOT_MODE")
+    hosted = bool(os.getenv("VERCEL_ENV"))
+    # Local development remains open unless pilot mode is explicitly enabled.
+    # A Vercel deployment is fail-closed by default so importing the repo cannot
+    # accidentally expose write/research endpoints before a pilot secret is set.
+    enabled = _truthy(explicit_mode) if explicit_mode is not None else hosted
     return PilotSettings(
-        enabled=_truthy(os.getenv("CIVICOS_PILOT_MODE")),
+        enabled=enabled,
         token_configured=bool(token),
         max_upload_bytes=max(1024, int(os.getenv("CIVICOS_MAX_UPLOAD_BYTES", DEFAULT_MAX_UPLOAD_BYTES))),
         rate_limit_per_minute=max(1, int(os.getenv("CIVICOS_PILOT_RATE_LIMIT_PER_MINUTE", DEFAULT_RATE_LIMIT_PER_MINUTE))),
         secure_cookies=not (os.getenv("CIVICOS_PILOT_SECURE_COOKIES", "true").strip().lower() in {"0", "false", "no", "off"}),
+        hosted_fail_closed=hosted and explicit_mode is None,
     )
 
 
@@ -129,6 +137,7 @@ def pilot_status() -> dict[str, Any]:
         "mode": "invite_only_first_testers",
         "enabled": cfg.enabled,
         "invite_secret_configured": cfg.token_configured,
+        "hosted_fail_closed": cfg.hosted_fail_closed,
         "consent_version": cfg.consent_version,
         "max_upload_bytes": cfg.max_upload_bytes,
         "rate_limit_per_minute": cfg.rate_limit_per_minute,
