@@ -8,14 +8,16 @@ from civicos.core.models import EvidenceReceipt
 class EvidenceVault:
     """Small local evidence vault for the master proof.
 
-    Public official-source bytes may be persisted when explicitly requested.
-    User documents default to receipt-only and should never be written here unless
-    a caller deliberately opts into a reviewed storage policy.
+    Public official-source bytes are persisted only when a concrete root is
+    configured. User documents are never written here by the v0.3 upload route.
     """
 
     def __init__(self, root: str | Path | None = None):
-        configured = root or os.getenv("CIVICOS_EVIDENCE_DIR")
-        self.root = Path(configured).expanduser() if configured else None
+        self.root = Path(root).expanduser() if root else None
+
+    @classmethod
+    def from_env(cls) -> "EvidenceVault":
+        return cls(os.getenv("CIVICOS_EVIDENCE_DIR"))
 
     @property
     def enabled(self) -> bool:
