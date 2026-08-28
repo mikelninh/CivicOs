@@ -21,6 +21,7 @@ class PilotSettings:
     token_configured: bool
     max_upload_bytes: int
     rate_limit_per_minute: int
+    secure_cookies: bool
     consent_version: str = PILOT_CONSENT_VERSION
     personal_evidence_persistence: bool = False
 
@@ -36,6 +37,7 @@ def settings() -> PilotSettings:
         token_configured=bool(token),
         max_upload_bytes=max(1024, int(os.getenv("CIVICOS_MAX_UPLOAD_BYTES", DEFAULT_MAX_UPLOAD_BYTES))),
         rate_limit_per_minute=max(1, int(os.getenv("CIVICOS_PILOT_RATE_LIMIT_PER_MINUTE", DEFAULT_RATE_LIMIT_PER_MINUTE))),
+        secure_cookies=not (os.getenv("CIVICOS_PILOT_SECURE_COOKIES", "true").strip().lower() in {"0", "false", "no", "off"}),
     )
 
 
@@ -130,6 +132,7 @@ def pilot_status() -> dict[str, Any]:
         "consent_version": cfg.consent_version,
         "max_upload_bytes": cfg.max_upload_bytes,
         "rate_limit_per_minute": cfg.rate_limit_per_minute,
+        "secure_cookies": cfg.secure_cookies,
         "personal_evidence_persistence": False,
         "document_processing": "in_memory_only",
         "request_body_logging": "not implemented by CivicOS application",
