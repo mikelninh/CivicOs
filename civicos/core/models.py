@@ -70,6 +70,7 @@ class SourceChangeImpact(BaseModel):
 class CalculatorPlan(BaseModel):
     benefit: str
     tool_name: str
+    source_id: str
     official_route: str
     state: CalculatorState
     supplied_inputs: list[str] = Field(default_factory=list)
