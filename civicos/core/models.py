@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field, HttpUrl
 ClaimStatus = Literal["supported", "disputed", "unresolved"]
 SourceState = Literal["verified_route", "verified_snapshot", "live_fetch"]
 FactStatus = Literal["verified", "not_found"]
+ChangeState = Literal["unchanged", "content_changed", "fact_changed", "fact_removed", "fact_added"]
+CalculatorState = Literal["ready", "missing_inputs", "official_tool_only", "guidance_only", "temporarily_unavailable"]
 
 
 class SourceRef(BaseModel):
@@ -52,6 +54,31 @@ class EvidenceFact(BaseModel):
     details: dict[str, Any] = Field(default_factory=dict)
 
 
+class SourceChangeImpact(BaseModel):
+    source_id: str
+    state: ChangeState
+    previous_sha256: str | None = None
+    current_sha256: str
+    added_fact_ids: list[str] = Field(default_factory=list)
+    removed_fact_ids: list[str] = Field(default_factory=list)
+    changed_fact_ids: list[str] = Field(default_factory=list)
+    affected_claim_ids: list[str] = Field(default_factory=list)
+    affected_golden_case_ids: list[str] = Field(default_factory=list)
+    regression_fixture: dict[str, Any] = Field(default_factory=dict)
+
+
+class CalculatorPlan(BaseModel):
+    benefit: str
+    tool_name: str
+    official_route: str
+    state: CalculatorState
+    supplied_inputs: list[str] = Field(default_factory=list)
+    missing_inputs: list[str] = Field(default_factory=list)
+    result_scope: str
+    note: str = ""
+    deterministic_preview: dict[str, Any] = Field(default_factory=dict)
+
+
 class Claim(BaseModel):
     claim_id: str
     text: str
@@ -84,6 +111,8 @@ class CaseResult(BaseModel):
     evidence_receipts: list[EvidenceReceipt] = Field(default_factory=list)
     evidence_excerpts: list[EvidenceExcerpt] = Field(default_factory=list)
     evidence_facts: list[EvidenceFact] = Field(default_factory=list)
+    source_changes: list[SourceChangeImpact] = Field(default_factory=list)
+    calculators: list[CalculatorPlan] = Field(default_factory=list)
     actions: list[ActionRecommendation] = Field(default_factory=list)
     uncertainties: list[str] = Field(default_factory=list)
     contradictions: list[str] = Field(default_factory=list)
