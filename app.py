@@ -8,11 +8,12 @@ from civicos.core.evidence import make_receipt
 from civicos.core.evidence_vault import EvidenceVault
 from civicos.core.live_evidence import refresh_case_sources
 from civicos.core.providers import PROVIDERS
+from civicos.core.source_evidence import extract_live_facts
 from civicos.providers.pruefpilot import ingest_decision_document
-from civicos.verticals.decision_review import review_decision
+from civicos.verticals.decision_review import attach_document_evidence, review_decision
 
 ROOT = Path(__file__).resolve().parent
-app = FastAPI(title="CivicOS", version="0.3.0", description="Evidence-to-action civic infrastructure")
+app = FastAPI(title="CivicOS", version="0.4.0", description="Evidence-to-action civic infrastructure")
 
 
 class RunRequest(BaseModel):
@@ -32,8 +33,9 @@ def health():
     return {
         "ok": True,
         "product": "CivicOS",
-        "version": "0.3.0",
+        "version": "0.4.0",
         "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?",
+        "evidence_contract": "receipt -> narrow verified fact -> claim -> next action",
     }
 
 
@@ -54,7 +56,14 @@ def fetch_source(source_id: str, persist: bool = False):
         if persist:
             vault = EvidenceVault.from_env()
             receipt = vault.store_public_source(receipt, body) if vault.enabled else receipt.model_copy(update={"metadata":{"persistence_warning":"CIVICOS_EVIDENCE_DIR is not configured; receipt remains in memory only"}})
-        return {"source": source_id, "receipt": receipt.model_dump(mode="json"), "raw_returned": False}
+        excerpts, facts = extract_live_facts(source_id, body, receipt.receipt_id)
+        return {
+            "source": source_id,
+            "receipt": receipt.model_dump(mode="json"),
+            "verified_facts": [fact.model_dump(mode="json") for fact in facts],
+            "evidence_excerpts": [excerpt.model_dump(mode="json") for excerpt in excerpts],
+            "raw_returned": False,
+        }
     except SourceError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -97,13 +106,14 @@ async def upload_decision(file: UploadFile = File(...), refresh_sources: bool = 
             "filename": intake.filename,
             "page_count": intake.page_count,
             "provider": intake.provider,
-            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.3",
+            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.4",
+            "trust_level": "user_evidence_untrusted_content",
         }
     })
     result = result.model_copy(update={
         "evidence_receipts": [user_receipt],
         "audit": list(result.audit) + [{
-            "step": "pruefpilot_document_intake_v3",
+            "step": "pruefpilot_document_intake_v4",
             "filename": intake.filename,
             "sha256": intake.sha256,
             "bytes": intake.bytes_read,
@@ -111,6 +121,7 @@ async def upload_decision(file: UploadFile = File(...), refresh_sources: bool = 
             "persisted": False,
         }],
     })
+    result = attach_document_evidence(result, user_receipt.receipt_id)
     if refresh_sources:
         result = refresh_case_sources(result)
     return {"blocked": False, "intake": intake.to_dict(), "case": result.model_dump(mode="json")}
