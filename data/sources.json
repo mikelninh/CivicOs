@@ -1,9 +1,10 @@
 {
-  "version": "0.2.0",
+  "version": "0.4.0",
   "verified_at": "2026-08-28",
   "contract": {
     "verified_route": "Authoritative route checked on verified_at; not evidence that a current run fetched the content.",
-    "live_fetch": "Current run fetched the allowlisted source and created a SHA-256 receipt."
+    "live_fetch": "Current run fetched the allowlisted source and created a SHA-256 receipt; this alone does not verify a semantic claim.",
+    "verified_fact": "A pre-declared deterministic fact profile matched the current-run bytes and linked an evidence excerpt and receipt to a specific claim. Scope remains narrow and does not imply full eligibility, legal applicability, or wrongdoing."
   },
   "sources": {
     "berlin_wohngeld": {"title":"Wohngeld - Mietzuschuss beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/120656/","verified_at":"2026-08-28","supports":["application route","eligibility factors","documents","responsibility","official calculator route"]},
