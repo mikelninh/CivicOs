@@ -9,6 +9,7 @@ from civicos.core.evidence_vault import EvidenceVault
 from civicos.core.live_evidence import refresh_case_sources
 from civicos.core.models import EvidenceFact
 from civicos.core.providers import PROVIDERS
+from civicos.core.readiness import release_readiness
 from civicos.core.source_change import evaluate_source_change
 from civicos.core.source_evidence import extract_live_facts
 from civicos.core.watchtower import evaluate_watchtower, watchtower_status
@@ -16,7 +17,7 @@ from civicos.providers.pruefpilot import ingest_decision_document
 from civicos.verticals.decision_review import attach_document_evidence, review_decision
 
 ROOT = Path(__file__).resolve().parent
-app = FastAPI(title="CivicOS", version="0.6.0", description="Evidence-to-action civic infrastructure")
+app = FastAPI(title="CivicOS", version="1.0.0-rc1", description="Evidence-to-action civic infrastructure")
 
 
 class RunRequest(BaseModel):
@@ -47,10 +48,15 @@ def health():
     return {
         "ok": True,
         "product": "CivicOS",
-        "version": "0.6.0",
+        "version": "1.0.0-rc1",
         "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?",
         "evidence_contract": "source -> receipt -> fact delta -> affected claim -> golden-case replay -> quality gate -> alert decision",
     }
+
+
+@app.get("/readiness")
+def readiness(run_replays: bool = True):
+    return release_readiness(run_replays=run_replays)
 
 
 @app.get("/sources")
@@ -103,7 +109,6 @@ def _compare(source_id: str, req: SourceCompareRequest):
 
 @app.post("/sources/{source_id}/compare")
 def compare_source(source_id: str, req: SourceCompareRequest):
-    """Live-fetch a source and report which claims/golden cases need re-checking."""
     try:
         receipt, excerpts, facts, impact = _compare(source_id, req)
         return {
@@ -119,12 +124,7 @@ def compare_source(source_id: str, req: SourceCompareRequest):
 
 @app.post("/watchtower/{source_id}")
 def run_watchtower(source_id: str, req: SourceCompareRequest):
-    """One complete Watchtower cycle: compare -> impact -> replay -> alert decision.
-
-    Citizen Agents or another monitor can call this with an explicit prior receipt/fact
-    snapshot. Watchtower suppresses content-only noise and never treats blocked replay
-    coverage as a pass.
-    """
+    """One complete Watchtower cycle: compare -> impact -> replay -> alert decision."""
     try:
         receipt, excerpts, facts, impact = _compare(source_id, req)
         report = evaluate_watchtower(impact, monitor_metadata=req.monitor_metadata)
@@ -179,14 +179,14 @@ async def upload_decision(file: UploadFile = File(...), refresh_sources: bool = 
             "filename": intake.filename,
             "page_count": intake.page_count,
             "provider": intake.provider,
-            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.6",
+            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS 1.0 rc1",
             "trust_level": "user_evidence_untrusted_content",
         }
     })
     result = result.model_copy(update={
         "evidence_receipts": [user_receipt],
         "audit": list(result.audit) + [{
-            "step": "pruefpilot_document_intake_v6",
+            "step": "pruefpilot_document_intake_v1_rc1",
             "filename": intake.filename,
             "sha256": intake.sha256,
             "bytes": intake.bytes_read,
