@@ -1,0 +1,5 @@
+[
+  {"authority":"Land Berlin","title":"Example IT service A","vendor":"Nordlicht Daten GmbH","value_eur":120000},
+  {"authority":"Land Berlin","title":"Example IT service B","vendor":"Nordlicht Daten","value_eur":85000},
+  {"authority":"Land Berlin","title":"Example research service","vendor":"Civic Labs UG","value_eur":65000}
+]

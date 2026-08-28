@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "verified_at": "2026-08-28",
+  "contract": {
+    "verified_route": "Authoritative route checked on verified_at; not evidence that a current run fetched the content.",
+    "live_fetch": "Current run fetched the allowlisted source and created a SHA-256 receipt."
+  },
+  "sources": {
+    "berlin_wohngeld": {"title":"Wohngeld - Mietzuschuss beantragen","publisher":"ServicePortal Berlin","url":"https://service.berlin.de/dienstleistung/120656/","verified_at":"2026-08-28","supports":["application route","eligibility factors","documents","responsibility"]},
+    "familienportal_kiz": {"title":"Kinderzuschlag","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/kinderzuschlag","verified_at":"2026-08-28","supports":["eligibility pre-check","documents","application route"]},
+    "familienportal_elterngeld": {"title":"Elterngeld","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/elterngeld","verified_at":"2026-08-28","supports":["eligibility","calculation guidance","application route"]},
+    "familienportal_unterhaltsvorschuss": {"title":"Unterhaltsvorschuss","publisher":"Familienportal des Bundes","url":"https://familienportal.de/familienportal/familienleistungen/unterhaltsvorschuss","verified_at":"2026-08-28","supports":["eligibility","amount guidance","application route"]},
+    "berlin_but": {"title":"Das Bildungspaket","publisher":"Land Berlin","url":"https://www.berlin.de/sen/bjf/hilfe-und-unterstuetzung/bildungspaket/","verified_at":"2026-08-28","supports":["Berlin Bildung und Teilhabe","service routing","support categories"]},
+    "berlin_procurement_awards": {"title":"Informationen über vergebene Aufträge","publisher":"Land Berlin","url":"https://www.berlin.de/vergabeplattform/veroeffentlichungen/info-19-20/","verified_at":"2026-08-28","supports":["awarded contracts","contracting authorities","awarded vendors"]},
+    "bundeshaushalt": {"title":"Bundeshaushalt digital","publisher":"Bundesministerium der Finanzen","url":"https://www.bundeshaushalt.de/DE/Bundeshaushalt-digital/bundeshaushalt-digital.html","verified_at":"2026-08-28","supports":["federal budget","budget titles","year comparison"]},
+    "bundesrechnungshof": {"title":"Bundesrechnungshof Veröffentlichungen","publisher":"Bundesrechnungshof","url":"https://www.bundesrechnungshof.de/DE/2_veroeffentlichungen/veroeffentlichungen_node.html","verified_at":"2026-08-28","supports":["audit reports","audit context"]},
+    "unternehmensregister": {"title":"Unternehmensregister","publisher":"Unternehmensregister","url":"https://www.unternehmensregister.de/de/so-gehts/registerinformationen?language=de","verified_at":"2026-08-28","supports":["company identity","current and historical extracts"]},
+    "vwvfg": {"title":"Verwaltungsverfahrensgesetz","publisher":"Bundesministerium der Justiz / Bundesamt für Justiz","url":"https://www.gesetze-im-internet.de/vwvfg/BJNR012530976.html","verified_at":"2026-08-28","supports":["general administrative-act form","reasoning","remedy instruction"]},
+    "gesetze_im_internet": {"title":"Gesetze im Internet","publisher":"Bundesministerium der Justiz / Bundesamt für Justiz","url":"https://www.gesetze-im-internet.de/","verified_at":"2026-08-28","supports":["consolidated federal-law lookup"]}
+  }
+}
