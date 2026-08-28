@@ -46,6 +46,8 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
     master_ready = all(value is True for value in master_gates.values() if value is not None)
 
     app_text = (ROOT / "app.py").read_text(encoding="utf-8")
+    pilot_text = (ROOT / "civicos" / "core" / "pilot.py").read_text(encoding="utf-8")
+    pyproject_text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     pilot_policy_ok = (
         PILOT_POLICY.get("mode") == "invite_only_first_testers"
         and PILOT_POLICY.get("audience", {}).get("adults_only") is True
@@ -65,9 +67,12 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
             marker in app_text
             for marker in ["Cache-Control", "Content-Security-Policy", "X-Content-Type-Options", "Referrer-Policy"]
         ),
-        "rate_limit_without_ip_retention": "enforce_rate_limit" in (ROOT / "civicos" / "core" / "pilot.py").read_text(encoding="utf-8"),
+        "rate_limit_without_ip_retention": "enforce_rate_limit" in pilot_text and "IP addresses" in pilot_text,
+        "hosted_deployment_fails_closed": "VERCEL_ENV" in pilot_text and "hosted_fail_closed" in pilot_text,
+        "vercel_fastapi_entrypoint_declared": '[tool.vercel]' in pyproject_text and 'entrypoint = "app:app"' in pyproject_text,
         "machine_readable_pilot_policy": pilot_policy_ok,
         "tester_release_runbook": (ROOT / "docs" / "PILOT_RELEASE.md").exists(),
+        "deployment_acceptance_runbook": (ROOT / "docs" / "DEPLOY_PILOT.md").exists(),
         "privacy_minimising_feedback_path": (ROOT / ".github" / "ISSUE_TEMPLATE" / "pilot-feedback.yml").exists(),
         "pilot_regression_tests_present": (ROOT / "tests" / "test_pilot_release.py").exists(),
     }
@@ -114,7 +119,7 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
         "watchtower": watchtower_status(),
         "release_definition": {
             "v1_master_proof": "12/12 executable product/safety cases + 12/12 source-impact coverage + 3 deeper flagship verticals + live evidence/change monitoring + scheduled Watchtower + human authority boundaries.",
-            "first_tester_pilot": "Invite-only adults, explicit consent, signed short-lived session, no personal document persistence, bounded uploads, no-store responses, safe feedback path and hard stop conditions. Deployment still requires CIVICOS_PILOT_MODE=true and a secret configured outside Git.",
+            "first_tester_pilot": "Invite-only adults, explicit consent, signed short-lived session, no personal document persistence, bounded uploads, no-store responses, hosted fail-closed deployment, safe feedback path and hard stop conditions. Deployment still requires a secret configured outside Git before sharing.",
             "public_beta": "Still requires production IAM/security/privacy controls, qualified domain review, representative users and missing authoritative data providers."
         },
     }
