@@ -1,37 +1,115 @@
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from civicos.engine import run
-from civicos.connectors.official import REGISTRY
+from civicos.connectors.official import REGISTRY, SourceError, fetch_official
+from civicos.core.evidence import make_receipt
+from civicos.core.evidence_vault import EvidenceVault
+from civicos.core.live_evidence import refresh_case_sources
 from civicos.core.providers import PROVIDERS
+from civicos.providers.pruefpilot import ingest_decision_document
+from civicos.verticals.decision_review import review_decision
 
 ROOT = Path(__file__).resolve().parent
-app = FastAPI(title="CivicOS", version="0.2.0", description="Evidence-to-action civic infrastructure")
+app = FastAPI(title="CivicOS", version="0.3.0", description="Evidence-to-action civic infrastructure")
+
 
 class RunRequest(BaseModel):
     vertical: str
     payload: dict | list | str
+    refresh_sources: bool = False
+    persist_public_evidence: bool = False
+
 
 @app.get("/", response_class=HTMLResponse)
 def home():
     return (ROOT / "web" / "index.html").read_text(encoding="utf-8")
 
+
 @app.get("/health")
 def health():
-    return {"ok": True, "product": "CivicOS", "version": "0.2.0", "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?"}
+    return {
+        "ok": True,
+        "product": "CivicOS",
+        "version": "0.3.0",
+        "north_star": "Given what is known right now, what is the most useful thing I can do next — and why?",
+    }
+
 
 @app.get("/sources")
 def sources():
     return {"sources": REGISTRY["sources"], "verified_at": REGISTRY.get("verified_at")}
 
+
 @app.get("/providers")
 def providers():
     return PROVIDERS
 
+
+@app.post("/sources/{source_id}/fetch")
+def fetch_source(source_id: str, persist: bool = False):
+    try:
+        receipt, body = fetch_official(source_id)
+        if persist:
+            receipt = EvidenceVault().store_public_source(receipt, body)
+        return {"source": source_id, "receipt": receipt.model_dump(mode="json"), "raw_returned": False}
+    except SourceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
 @app.post("/run")
 def run_case(req: RunRequest):
     try:
-        return run(req.vertical, req.payload).model_dump(mode="json")
+        result = run(req.vertical, req.payload)
+        if req.refresh_sources:
+            result = refresh_case_sources(result, persist_public_evidence=req.persist_public_evidence)
+        return result.model_dump(mode="json")
     except (ValueError, TypeError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/decision-review/upload")
+async def upload_decision(file: UploadFile = File(...), refresh_sources: bool = False):
+    content = await file.read()
+    try:
+        intake = ingest_decision_document(file.filename or "decision.pdf", content, file.content_type or "")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    if intake.status == "quarantined":
+        return {
+            "blocked": True,
+            "reason": "Uploaded document contains instruction-like or script-like content and was quarantined as untrusted data.",
+            "intake": intake.to_dict(),
+            "case": None,
+        }
+
+    result = review_decision(intake.text)
+    user_receipt = make_receipt(
+        "user-decision-document",
+        content,
+        content_type=file.content_type or "application/octet-stream",
+        status_code=200,
+    ).model_copy(update={
+        "metadata": {
+            "filename": intake.filename,
+            "page_count": intake.page_count,
+            "provider": intake.provider,
+            "privacy": "hash-and-process-in-memory; uploaded bytes are not persisted by CivicOS v0.3",
+        }
+    })
+    result = result.model_copy(update={
+        "evidence_receipts": [user_receipt],
+        "audit": list(result.audit) + [{
+            "step": "pruefpilot_document_intake_v3",
+            "filename": intake.filename,
+            "sha256": intake.sha256,
+            "bytes": intake.bytes_read,
+            "page_count": intake.page_count,
+            "persisted": False,
+        }],
+    })
+    if refresh_sources:
+        result = refresh_case_sources(result)
+    return {"blocked": False, "intake": intake.to_dict(), "case": result.model_dump(mode="json")}
