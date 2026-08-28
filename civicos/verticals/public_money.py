@@ -110,6 +110,7 @@ def analyse_awards(awards: list[dict[str, Any]]) -> CaseResult:
         actions=[action],
         uncertainties=[
             "Repeated vendor labels are not proof of legal-entity identity.",
+            "Repeated awards are observable patterns and investigation leads, not findings of corruption or misconduct.",
             "Entity-resolution matches are not findings of wrongdoing.",
             "Recipient-level payment evidence is distinct from budget appropriations, award notices and Public Money MCP's current bundled coverage.",
         ],
