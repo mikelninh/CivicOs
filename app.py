@@ -52,7 +52,8 @@ def fetch_source(source_id: str, persist: bool = False):
     try:
         receipt, body = fetch_official(source_id)
         if persist:
-            receipt = EvidenceVault().store_public_source(receipt, body)
+            vault = EvidenceVault.from_env()
+            receipt = vault.store_public_source(receipt, body) if vault.enabled else receipt.model_copy(update={"metadata":{"persistence_warning":"CIVICOS_EVIDENCE_DIR is not configured; receipt remains in memory only"}})
         return {"source": source_id, "receipt": receipt.model_dump(mode="json"), "raw_returned": False}
     except SourceError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
