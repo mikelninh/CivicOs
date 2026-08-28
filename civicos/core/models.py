@@ -8,6 +8,8 @@ SourceState = Literal["verified_route", "verified_snapshot", "live_fetch"]
 FactStatus = Literal["verified", "not_found"]
 ChangeState = Literal["unchanged", "content_changed", "fact_changed", "fact_removed", "fact_added"]
 CalculatorState = Literal["ready", "missing_inputs", "official_tool_only", "guidance_only", "temporarily_unavailable"]
+ReplayStatus = Literal["passed", "failed", "blocked"]
+AlertDecision = Literal["suppressed", "notify", "review"]
 
 
 class SourceRef(BaseModel):
@@ -78,6 +80,34 @@ class CalculatorPlan(BaseModel):
     result_scope: str
     note: str = ""
     deterministic_preview: dict[str, Any] = Field(default_factory=dict)
+
+
+class GoldenCaseReplay(BaseModel):
+    case_id: str
+    status: ReplayStatus
+    vertical: str | None = None
+    result_summary: str = ""
+    deterministic_checks: dict[str, bool] = Field(default_factory=dict)
+    failed_checks: list[str] = Field(default_factory=list)
+    judge_provider: str = "mikelninh/judge-mcp"
+    judge_request: dict[str, Any] = Field(default_factory=dict)
+    note: str = ""
+
+
+class WatchtowerReport(BaseModel):
+    source_id: str
+    change_state: ChangeState
+    semantic_change: bool
+    alert_decision: AlertDecision
+    notify_reason: str
+    affected_claim_ids: list[str] = Field(default_factory=list)
+    affected_golden_case_ids: list[str] = Field(default_factory=list)
+    replays: list[GoldenCaseReplay] = Field(default_factory=list)
+    passed: int = 0
+    failed: int = 0
+    blocked: int = 0
+    provider_chain: list[str] = Field(default_factory=list)
+    human_review_required: bool = False
 
 
 class Claim(BaseModel):
