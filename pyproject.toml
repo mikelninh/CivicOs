@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civicos"
-version = "0.5.0"
+version = "0.6.0"
 description = "Evidence-to-action infrastructure for civic questions"
 requires-python = ">=3.11"
 dependencies = [
@@ -18,6 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]
 public-money = ["pmm-mcp @ git+https://github.com/mikelninh/pmm-mcp.git"]
+judge = ["judge-mcp @ git+https://github.com/mikelninh/judge-mcp.git"]
 
 [tool.setuptools.packages.find]
 include = ["civicos*"]
