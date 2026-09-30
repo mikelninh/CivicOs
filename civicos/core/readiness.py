@@ -123,3 +123,69 @@ def release_readiness(run_replays: bool = True) -> dict[str, Any]:
             "public_beta": "Still requires production IAM/security/privacy controls, qualified domain review, representative users and missing authoritative data providers."
         },
     }
+
+
+
+def agency_release_gate(run_replays: bool = True) -> dict[str, Any]:
+    """Map CivicOS's existing proof/pilot/public-beta truth into the shared R0–R4 language.
+
+    This is an adapter, not a replacement for the canonical CivicOS gates.
+    """
+    readiness = release_readiness(run_replays=run_replays)
+    pilot_ready = readiness["first_tester_pilot_ready"]
+    runtime_ready = readiness["pilot_runtime_configured"]
+    public_ready = readiness["public_beta_ready"]
+
+    gates = [
+        {
+            "id": "R0-human-outcome",
+            "stage": "R0",
+            "owner": "human",
+            "status": "pass",
+            "claim": "CivicOS turns evidence and uncertainty into an understandable next action while consequential authority stays human.",
+            "evidence": ["docs/V1_RELEASE.md", "docs/PILOT_RELEASE.md"],
+        },
+        {
+            "id": "R1-master-proof",
+            "stage": "R1",
+            "owner": "automated",
+            "status": "pass" if readiness["master_proof_ready"] else "blocked",
+            "claim": "Golden cases, source-impact coverage and flagship verticals pass the existing master-proof gate.",
+            "evidence": ["scripts/check_release_gate.py", readiness["master_proof_gates"]],
+        },
+        {
+            "id": "R2-first-tester-safety",
+            "stage": "R2",
+            "owner": "automated",
+            "status": "pass" if pilot_ready else "blocked",
+            "claim": "Invite-only consent, no personal-document persistence, bounded uploads and no automatic external actions pass the pilot gate.",
+            "evidence": ["scripts/check_pilot_gate.py", readiness["first_tester_pilot_gates"]],
+        },
+        {
+            "id": "R3-deployment-runtime",
+            "stage": "R3",
+            "owner": "human",
+            "status": "pass" if runtime_ready else "review",
+            "claim": "A real invite-only deployment has its secret and secure-cookie runtime configured outside Git.",
+            "evidence": [readiness["pilot_runtime"]],
+        },
+        {
+            "id": "R4-representative-public-beta",
+            "stage": "R4",
+            "owner": "external",
+            "status": "pass" if public_ready else "review",
+            "claim": "Representative user evaluation, qualified domain review and production IAM/privacy/provider gaps are closed.",
+            "evidence": [readiness["public_beta_gates"]],
+        },
+    ]
+    verdict = "BLOCK" if any(g["status"] == "blocked" for g in gates) else (
+        "PASS" if all(g["status"] == "pass" for g in gates) else "REVIEW"
+    )
+    return {
+        "schema": "openaction.release-gate.adapter.v1",
+        "project": "CivicOS",
+        "release": readiness["release_candidate"],
+        "verdict": verdict,
+        "gates": gates,
+        "canonical_sources": ["GET /readiness", "scripts/check_release_gate.py", "scripts/check_pilot_gate.py"],
+    }
